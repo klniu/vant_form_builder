@@ -1,0 +1,284 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_vant_kit/widgets/imageWall.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:vant_form_builder/model/attachment_type.dart';
+import 'package:vant_form_builder/model/attachment.dart';
+import 'package:vant_form_builder/util/toast_util.dart';
+
+import 'custom_form_field.dart';
+
+class AttachmentPickerField extends StatefulWidget {
+  final String name;
+  final AttachmentType attachmentType;
+  final String label;
+  final double labelWidth;
+  final bool required;
+  final FormFieldValidator validator;
+  final int maxCount;
+  final Function(Attachment) onChange;
+  final Function(Attachment) onRemove;
+  final bool disabled;
+  final Future Function(MultipartFile) uploadService;
+
+  /// 最大附件数量
+  final List<Attachment> defaultAttachments;
+
+  const AttachmentPickerField(this.name, this.attachmentType, this.uploadService,
+      {Key key,
+      this.label,
+      this.labelWidth,
+      this.required = false,
+      this.validator,
+      this.maxCount = 20,
+      this.defaultAttachments,
+      this.onChange,
+      this.onRemove,
+      this.disabled = false})
+      : super(key: key);
+
+  @override
+  _AttachmentPickerFieldState createState() => _AttachmentPickerFieldState();
+}
+
+class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
+  List<Attachment> attachments;
+  List<String> images;
+  bool uploading = false;
+
+  int get _remainingItemCount => widget.maxCount == null ? null : widget.maxCount - attachments.length;
+
+  @override
+  Widget build(BuildContext context) {
+    attachments ??= widget.defaultAttachments ?? [];
+    return FormBuilderField<List<Attachment>>(
+        name: widget.name,
+        validator: widget.validator,
+        initialValue: attachments,
+        enabled: !widget.disabled,
+        onReset: () {
+          setState(() {
+            attachments = widget.defaultAttachments ?? [];
+          });
+        },
+        builder: (FormFieldState<List<Attachment>> field) {
+          return CustomFormField(
+              label: widget.label,
+              labelWidth: widget.labelWidth,
+              required: widget.required,
+              errorText: field.errorText,
+              child: _buildPicker(field));
+        });
+  }
+
+  Widget _buildPicker(FormFieldState<List<Attachment>> field) {
+    if (widget.attachmentType == AttachmentType.Image) {
+      images ??= attachments != null ? List.from(attachments.map((e) => e.url).toList()) : [];
+      return _buildImagePicker(field);
+    } else if (widget.attachmentType == AttachmentType.All) {
+      return _buildAllFilePicker(field);
+    }
+    return Text("");
+  }
+
+  Widget _buildImagePicker(FormFieldState<List<Attachment>> field) {
+    return Stack(alignment: AlignmentDirectional.centerStart, children: [
+      ImageWall(
+        images: images,
+        count: widget.maxCount,
+        onUpload: (files) async {
+          if (files.length != 1 || widget.disabled) {
+            return null;
+          }
+          setState(() {
+            uploading = true;
+          });
+          var file = files[0];
+          ByteData byteData;
+          // 压缩图片
+          if (file.originalHeight > 1000)
+            byteData = await file.getThumbByteData((file.originalWidth / file.originalHeight * 1000).round(), 1000,
+                quality: 90);
+          if (file.originalWidth > 1000) {
+            byteData = await file.getThumbByteData(1000, (file.originalHeight / file.originalWidth * 1000).round(),
+                quality: 90);
+          } else {
+            byteData = await file.getByteData(quality: 90);
+          }
+          List<int> imageData = byteData.buffer.asUint8List();
+          MultipartFile multipartFile = MultipartFile.fromBytes(imageData, filename: files[0].name);
+          try {
+            Attachment attachment = await widget.uploadService(multipartFile);
+            setState(() {
+              attachments.add(attachment);
+              uploading = false;
+            });
+            field.didChange(attachments);
+            if (widget.onChange != null) {
+              widget.onChange(attachment);
+            }
+            return attachment.url;
+          } catch (e) {
+            ToastUtil.error("图片上传失败, " + e.message);
+            setState(() {
+              uploading = false;
+            });
+          }
+          return null;
+        },
+        onRemove: (file) {
+          if (widget.disabled) {
+            return null;
+          }
+          var index = attachments.indexWhere((element) => element.url == file);
+          setState(() {
+            attachments.removeAt(index);
+          });
+          field.didChange(attachments);
+          if (widget.onRemove != null) {
+            widget.onRemove(attachments[index]);
+          }
+        },
+        onChange: (image) {},
+      ),
+      if (uploading) _uploading()
+    ]);
+  }
+
+  Widget _uploading() {
+    return Container(
+        width: 80,
+        padding: EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.green,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        alignment: Alignment.center,
+        child: Text("上传中...", style: TextStyle(color: Colors.white)));
+  }
+
+  Widget _buildAllFilePicker(FormFieldState<List<Attachment>> field) {
+    return Stack(alignment: AlignmentDirectional.center, children: [
+      if (uploading) _uploading(),
+      Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              if (widget.maxCount != null) Text("${attachments.length}/${widget.maxCount}"),
+              InkWell(
+                child: const Text("选择文件"),
+                onTap: (_remainingItemCount != null && _remainingItemCount <= 0 && !widget.disabled)
+                    ? null
+                    : () => pickFiles(field),
+              ),
+            ],
+          ),
+          SizedBox(height: 3),
+          defaultFileViewer(field),
+        ],
+      ),
+    ]);
+  }
+
+  Future<void> pickFiles(FormFieldState field) async {
+    FilePickerResult result;
+    try {
+      if (await Permission.storage.request().isGranted) {
+        result = await FilePicker.platform.pickFiles(withData: true);
+      } else {
+        ToastUtil.error("存储权限获取失败");
+        throw new Exception("存储权限获取失败");
+      }
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+    }
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    if (result != null) {
+      setState(() {
+        uploading = true;
+      });
+      for (var file in result.files) {
+        MultipartFile multipartFile = MultipartFile.fromBytes(file.bytes, filename: file.name);
+        Attachment attachment = await widget.uploadService(multipartFile);
+        setState(() => attachments.add(attachment));
+        field.didChange(attachments);
+      }
+      setState(() {
+        uploading = false;
+      });
+    }
+  }
+
+  defaultFileViewer(FormFieldState field) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var count = 5;
+        var spacing = 10;
+        var itemSize = (constraints.biggest.width - (count * spacing)) / count;
+        return Wrap(
+          // scrollDirection: Axis.horizontal,
+          alignment: WrapAlignment.start,
+          runAlignment: WrapAlignment.start,
+          runSpacing: 10,
+          spacing: 10,
+          children: List.generate(
+            attachments.length,
+            (index) {
+              return Stack(
+                alignment: Alignment.topRight,
+                children: <Widget>[
+                  Container(
+                    height: itemSize,
+                    width: itemSize,
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(right: 2),
+                    child: Icon(
+                      Icons.insert_drive_file,
+                      color: Colors.lightBlue,
+                      size: 36,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      if (!widget.disabled) {
+                        removeFileAtIndex(index, field);
+                      }
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(.7),
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      height: 16,
+                      width: 16,
+                      child: Icon(Icons.close, size: 14, color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void removeFileAtIndex(int index, FormFieldState field) {
+    setState(() {
+      attachments.removeAt(index);
+    });
+    field.didChange(attachments);
+  }
+}
