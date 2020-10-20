@@ -16,7 +16,7 @@ class SignatureField extends StatefulWidget {
   final bool required;
   final FormFieldValidator validator;
   final String defaultSignature; // data uri or url
-  final Function(String) onConfirm;
+  final Future Function(String) onConfirm;
   final bool disabled;
 
   const SignatureField(this.name,
@@ -105,7 +105,7 @@ class _SignatureFieldState extends State<SignatureField> {
                               });
                               field.didChange(_imageUri);
                               if (widget.onConfirm != null) {
-                                widget.onConfirm(_imageUri);
+                                await widget.onConfirm(_imageUri);
                               }
                             }
                             return true;
