@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:flutter_vant_kit/widgets/field.dart';
 
-class CustomTextField extends StatefulWidget {
+class CustomTextField<T> extends StatefulWidget {
   final String name;
   final String label;
   final double labelWidth;
@@ -13,7 +13,7 @@ class CustomTextField extends StatefulWidget {
   final int rows;
   final int maxLength;
   final bool showWordLimit;
-  final String defaultText;
+  final T defaultValue;
   final String placeholder;
   final TextInputType keyboardType;
   final Function(String) onChange;
@@ -31,21 +31,21 @@ class CustomTextField extends StatefulWidget {
       this.showWordLimit,
       this.placeholder,
       this.keyboardType,
-      this.defaultText,
+      this.defaultValue,
       this.onChange,
       this.disabled = false})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _CustomTextFieldState();
+  State<StatefulWidget> createState() => _CustomTextFieldState<T>();
 }
 
-class _CustomTextFieldState extends State<CustomTextField> {
+class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
   TextEditingController _controller = new TextEditingController();
 
   @override
   void initState() {
-    _controller.text = widget.defaultText;
+    _controller.text = widget.defaultValue?.toString();
     super.initState();
   }
 
@@ -61,8 +61,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
         name: widget.name,
         validator: widget.validator,
         enabled: !widget.disabled,
-        initialValue: widget.defaultText,
-        onReset: () => _controller.text = widget.defaultText,
+        initialValue: widget.defaultValue,
+        onReset: () => _controller.text = widget.defaultValue?.toString(),
+        onChanged: (val) {
+          if (val == _controller.text) return;
+          _controller.text = val.toString();
+          _controller.selection = TextSelection.collapsed(offset: val?.length ?? -1);
+        },
         builder: (FormFieldState<dynamic> field) {
           return Field(
               label: widget.label,
@@ -78,11 +83,22 @@ class _CustomTextFieldState extends State<CustomTextField> {
               keyboardType: widget.keyboardType,
               disabled: widget.disabled,
               onChange: (val) {
-                field.didChange(val);
+                var value;
+                if (T is int) {
+                  value = int.parse(val);
+                } else if (T is double) {
+                  value = double.parse(val);
+                } else {
+                  value = val?.toString();
+                }
+                field.didChange(value);
                 if (widget.onChange != null) {
-                  widget.onChange(val);
+                  widget.onChange(value);
                 }
               });
         });
+  }
+
+  void patchValue(T value) {
   }
 }
