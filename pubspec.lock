@@ -231,8 +231,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "96f04d8541c9e006b19cf25a1ab73e34813e75a8"
-      url: "git://github.com/benjaken/flutter_vant_kit.git"
+      resolved-ref: "3a3369bdd1f98d350da1da56b3a5db191f8d60cb"
+      url: "git://github.com/klniu/flutter_vant_kit.git"
     source: git
     version: "0.2.5"
   flutter_web_plugins:
