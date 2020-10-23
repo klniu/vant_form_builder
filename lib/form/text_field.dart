@@ -16,7 +16,7 @@ class CustomTextField<T> extends StatefulWidget {
   final T defaultValue;
   final String placeholder;
   final TextInputType keyboardType;
-  final Function(String) onChange;
+  final Function(T) onChange;
   final bool disabled;
 
   const CustomTextField(this.name,
@@ -57,18 +57,18 @@ class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilderField(
+    return FormBuilderField<T>(
         name: widget.name,
         validator: widget.validator,
         enabled: !widget.disabled,
         initialValue: widget.defaultValue,
         onReset: () => _controller.text = widget.defaultValue?.toString(),
         onChanged: (val) {
-          if (val == _controller.text) return;
+          if (val.toString() == _controller.text) return;
           _controller.text = val.toString();
-          _controller.selection = TextSelection.collapsed(offset: val?.length ?? -1);
+          _controller.selection = TextSelection.collapsed(offset: val?.toString().length ?? -1);
         },
-        builder: (FormFieldState<dynamic> field) {
+        builder: (FormFieldState<T> field) {
           return Field(
               label: widget.label,
               labelWidth: widget.labelWidth ?? Style.fieldLabelWidth,
@@ -84,9 +84,9 @@ class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
               disabled: widget.disabled,
               onChange: (val) {
                 var value;
-                if (T is int) {
+                if (T == int) {
                   value = int.parse(val);
-                } else if (T is double) {
+                } else if (T == double) {
                   value = double.parse(val);
                 } else {
                   value = val?.toString();
