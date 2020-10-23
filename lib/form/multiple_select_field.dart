@@ -39,25 +39,34 @@ class MultipleSelectField extends StatefulWidget {
 }
 
 class _MultipleSelectFieldState extends State<MultipleSelectField> {
-  List<String> selected;
+  List<String> _selected;
 
   _MultipleSelectFieldState();
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
   @override
   void initState() {
+    if (widget.defaultValue != null) {
+      _selected = widget.defaultValue;
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _selected = formBuilderState.initialValue[widget.name] ?? [];
+      }
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    selected ??= widget.defaultValue ?? [];
     return FormBuilderField(
         name: widget.name,
         validator: widget.validator,
         initialValue: widget.defaultValue,
         onReset: () {
           setState(() {
-            selected = widget.defaultValue;
+            _selected = widget.defaultValue;
           });
         },
         builder: (FormFieldState<dynamic> field) {
@@ -72,7 +81,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                         child: widget.loading ? Text("数据加载中...",
                       style: TextStyle(color: Style.fieldInputTextColor, fontSize: Style.fieldFontSize))
                   :
-                  selected != null && selected.length > 0
+                  _selected != null && _selected.length > 0
                             ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
                             : Text("请选择" + widget.label,
                                 style:
@@ -102,16 +111,16 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                           okButtonLabel: "确定",
                           cancelButtonLabel: "取消",
                           items: items,
-                          initialSelectedValues: selected,
+                          initialSelectedValues: _selected,
                         );
                       },
                     );
 
                     if (selectedValues != null) {
                       setState(() {
-                        selected = List.from(selectedValues);
+                        _selected = List.from(selectedValues);
                       });
-                      field.didChange(selected);
+                      field.didChange(_selected);
                     }
                   }));
         });
@@ -120,8 +129,8 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
   List<Widget> _buildSelectedOptions() {
     List<Widget> selectedOptions = [];
 
-    if (selected != null) {
-      for (var item in selected) {
+    if (_selected != null) {
+      for (var item in _selected) {
         var existingItem = widget.nodes.singleWhere((itm) => itm.value == item, orElse: () => null);
         if (existingItem == null) {
           continue;

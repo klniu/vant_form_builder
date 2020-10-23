@@ -43,9 +43,18 @@ class CustomTextField<T> extends StatefulWidget {
 class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
   TextEditingController _controller = new TextEditingController();
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
   @override
   void initState() {
-    _controller.text = widget.defaultValue?.toString();
+    if (widget.defaultValue != null) {
+      _controller.text = widget.defaultValue.toString();
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _controller.text = formBuilderState.initialValue[widget.name]?.toString();
+      }
+    }
     super.initState();
   }
 

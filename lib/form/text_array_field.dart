@@ -41,9 +41,18 @@ class _TextArrayFieldState extends State<TextArrayField> {
   List<TextEditingController> _controllers = [new TextEditingController()];
   List<TextEditingController> _toBeDisposed = [];
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
   @override
   void initState() {
-    _splitText(widget.defaultText);
+    if (widget.defaultText != null) {
+      _splitText(widget.defaultText);
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _splitText(formBuilderState.initialValue[widget.name]);
+      }
+    }
     super.initState();
   }
 
@@ -60,7 +69,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
 
   _splitText(String text) {
     if (isBlank(text)) return;
-    var texts = widget.defaultText.split(widget.splitString);
+    var texts = text.split(widget.splitString);
     if (texts.length < _controllers.length) {
       Iterable<int>.generate(_controllers.length - texts.length).forEach((_) {
         _controllers.removeLast().dispose();

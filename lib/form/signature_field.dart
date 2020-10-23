@@ -44,9 +44,18 @@ class _SignatureFieldState extends State<SignatureField> {
   String _imageUri;
   static const _dataUriPrefix = "data:image/png;base64,";
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
   @override
   void initState() {
-    _imageUri = widget.defaultSignature;
+    if (widget.defaultSignature != null) {
+      _imageUri = widget.defaultSignature;
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _imageUri = formBuilderState.initialValue[widget.name];
+      }
+    }
     super.initState();
   }
 

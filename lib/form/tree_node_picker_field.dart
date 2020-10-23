@@ -47,16 +47,23 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
 
   _TreeNodePickerFieldState();
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
   @override
   void initState() {
+    if (widget.defaultValue != null) {
+      _onChangeValueOutside(widget.defaultValue);
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _onChangeValueOutside(formBuilderState.initialValue[widget.name]);
+      }
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (index == null) {
-      _onChangeValueOutside(widget.defaultValue);
-    }
     return FormBuilderField(
         name: widget.name,
         validator: widget.validator,
@@ -150,7 +157,7 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
   /// 在外部通过form_builder更改时调用
   _onChangeValueOutside(String val) {
     if (isNotBlank(val)) {
-      var node = DataConverter.getIndexInTreeNodesByValue(widget.defaultValue, widget.nodes);
+      var node = DataConverter.getIndexInTreeNodesByValue(val, widget.nodes);
       if (node != null) {
         setState(() {
           value = node.value;

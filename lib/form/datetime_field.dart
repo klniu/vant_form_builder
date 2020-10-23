@@ -42,9 +42,23 @@ class _DateTimeFieldState extends State<DateTimeField> {
 
   String get selectedText => _formatDate(_value);
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
+  @override
+  void initState() {
+    if (widget.defaultTime != null) {
+      _value = widget.defaultTime;
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _value = formBuilderState.initialValue[widget.name];
+      }
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _value ??= widget.defaultTime;
     return FormBuilderField(
         name: widget.name,
         validator: widget.validator,

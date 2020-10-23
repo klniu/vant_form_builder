@@ -46,23 +46,39 @@ class AttachmentPickerField extends StatefulWidget {
 }
 
 class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
-  List<Attachment> attachments;
-  List<String> images;
-  bool uploading = false;
+  List<Attachment> _attachments;
+  List<String> _images;
+  bool _uploading = false;
 
-  int get _remainingItemCount => widget.maxCount == null ? null : widget.maxCount - attachments.length;
+  int get _remainingItemCount => widget.maxCount == null ? null : widget.maxCount - _attachments.length;
+
+
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
+  @override
+  void initState() {
+    if (widget.defaultAttachments != null) {
+      _attachments = widget.defaultAttachments;
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _attachments = formBuilderState.initialValue[widget.name] ?? [];
+      }
+    }
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    attachments ??= widget.defaultAttachments ?? [];
     return FormBuilderField<List<Attachment>>(
         name: widget.name,
         validator: widget.validator,
-        initialValue: attachments,
+        initialValue: _attachments,
         enabled: !widget.disabled,
         onReset: () {
           setState(() {
-            attachments = widget.defaultAttachments ?? [];
+            _attachments = widget.defaultAttachments ?? [];
           });
         },
         builder: (FormFieldState<List<Attachment>> field) {
@@ -77,7 +93,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
   Widget _buildPicker(FormFieldState<List<Attachment>> field) {
     if (widget.attachmentType == AttachmentType.Image) {
-      images ??= attachments != null ? List.from(attachments.map((e) => e.url).toList()) : [];
+      _images ??= _attachments != null ? List.from(_attachments.map((e) => e.url).toList()) : [];
       return _buildImagePicker(field);
     } else if (widget.attachmentType == AttachmentType.All) {
       return _buildAllFilePicker(field);
@@ -88,14 +104,14 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
   Widget _buildImagePicker(FormFieldState<List<Attachment>> field) {
     return Stack(alignment: AlignmentDirectional.centerStart, children: [
       ImageWall(
-        images: images,
+        images: _images,
         count: widget.maxCount,
         onUpload: (files) async {
           if (files.length != 1 || widget.disabled) {
             return null;
           }
           setState(() {
-            uploading = true;
+            _uploading = true;
           });
           var file = files[0];
           ByteData byteData;
@@ -114,10 +130,10 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           try {
             Attachment attachment = await widget.uploadService(multipartFile);
             setState(() {
-              attachments.add(attachment);
-              uploading = false;
+              _attachments.add(attachment);
+              _uploading = false;
             });
-            field.didChange(attachments);
+            field.didChange(_attachments);
             if (widget.onChange != null) {
               widget.onChange(attachment);
             }
@@ -125,7 +141,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           } catch (e) {
             ToastUtil.error("图片上传失败, " + e.message);
             setState(() {
-              uploading = false;
+              _uploading = false;
             });
           }
           return null;
@@ -134,22 +150,22 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           if (widget.disabled) {
             return null;
           }
-          var index = attachments.indexWhere((element) => element.url == file);
+          var index = _attachments.indexWhere((element) => element.url == file);
           setState(() {
-            attachments.removeAt(index);
+            _attachments.removeAt(index);
           });
-          field.didChange(attachments);
+          field.didChange(_attachments);
           if (widget.onRemove != null) {
-            widget.onRemove(attachments[index]);
+            widget.onRemove(_attachments[index]);
           }
         },
         onChange: (image) {},
       ),
-      if (uploading) _uploading()
+      if (_uploading) _uploadingWidget()
     ]);
   }
 
-  Widget _uploading() {
+  Widget _uploadingWidget() {
     return Container(
         width: 80,
         padding: EdgeInsets.symmetric(vertical: 10),
@@ -164,13 +180,13 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
   Widget _buildAllFilePicker(FormFieldState<List<Attachment>> field) {
     return Stack(alignment: AlignmentDirectional.center, children: [
-      if (uploading) _uploading(),
+      if (_uploading) _uploadingWidget(),
       Column(
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              if (widget.maxCount != null) Text("${attachments.length}/${widget.maxCount}"),
+              if (widget.maxCount != null) Text("${_attachments.length}/${widget.maxCount}"),
               InkWell(
                 child: const Text("选择文件"),
                 onTap: (_remainingItemCount != null && _remainingItemCount <= 0 && !widget.disabled)
@@ -205,16 +221,16 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
     if (result != null) {
       setState(() {
-        uploading = true;
+        _uploading = true;
       });
       for (var file in result.files) {
         MultipartFile multipartFile = MultipartFile.fromBytes(file.bytes, filename: file.name);
         Attachment attachment = await widget.uploadService(multipartFile);
-        setState(() => attachments.add(attachment));
-        field.didChange(attachments);
+        setState(() => _attachments.add(attachment));
+        field.didChange(_attachments);
       }
       setState(() {
-        uploading = false;
+        _uploading = false;
       });
     }
   }
@@ -232,7 +248,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           runSpacing: 10,
           spacing: 10,
           children: List.generate(
-            attachments.length,
+            _attachments.length,
             (index) {
               return Stack(
                 alignment: Alignment.topRight,
@@ -277,8 +293,8 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
   void removeFileAtIndex(int index, FormFieldState field) {
     setState(() {
-      attachments.removeAt(index);
+      _attachments.removeAt(index);
     });
-    field.didChange(attachments);
+    field.didChange(_attachments);
   }
 }

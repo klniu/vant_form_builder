@@ -33,9 +33,23 @@ class RadioField extends StatefulWidget {
 class _RadioFieldState extends State<RadioField> {
   String _value;
 
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+
+  @override
+  void initState() {
+    if (widget.defaultValue != null) {
+      _value = widget.defaultValue;
+    } else {
+      FormBuilderState formBuilderState = of(context);
+      if (formBuilderState != null && formBuilderState.initialValue != null) {
+        _value = formBuilderState.initialValue[widget.name] ?? [];
+      }
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _value ??= widget.defaultValue;
     return FormBuilderField(
         name: widget.name,
         validator: widget.validator,
