@@ -16,7 +16,7 @@ dependencies:
   flutter_vant_kit:
     git:
       url: git://github.com/klniu/flutter_vant_kit.git
-  flutter_form_builder: ^4.0.0-pre.4
+  flutter_form_builder: ^4.0.0-pre.5
   dio: ^3.0.10
   fluttertoast: ^7.1.1
   flutter_picker: ^1.1.5
