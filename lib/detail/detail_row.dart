@@ -10,15 +10,16 @@ class DetailRow extends StatelessWidget {
   final Color textColor;
   final FontWeight textFontWeight;
   final bool required;
+  final EdgeInsets padding;
 
   const DetailRow(this.label,
-      {Key key, this.labelWidth, this.child, this.text = "", this.textColor, this.textFontWeight, this.required = false})
+      {Key key, this.labelWidth, this.child, this.text = "", this.textColor, this.textFontWeight, this.required = false, this.padding})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        padding: padding ?? EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         child: Row(children: [
           Container(
               width: labelWidth ?? Style.fieldLabelWidth,
