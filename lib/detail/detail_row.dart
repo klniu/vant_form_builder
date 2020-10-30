@@ -9,9 +9,10 @@ class DetailRow extends StatelessWidget {
   final String text;
   final Color textColor;
   final FontWeight textFontWeight;
+  final bool required;
 
   const DetailRow(this.label,
-      {Key key, this.labelWidth, this.child, this.text = "", this.textColor, this.textFontWeight})
+      {Key key, this.labelWidth, this.child, this.text = "", this.textColor, this.textFontWeight, this.required = false})
       : super(key: key);
 
   @override
@@ -23,6 +24,12 @@ class DetailRow extends StatelessWidget {
               width: labelWidth ?? Style.fieldLabelWidth,
               height: Style.fieldMinHeight,
               child: Row(children: [
+                if (required)
+                  Text("*",
+                      style: TextStyle(
+                        fontSize: Style.fieldFontSize,
+                        color: Style.fieldRequiredColor,
+                      )),
                 Text(label, textAlign: TextAlign.start, style: TextStyle(fontSize: Style.fieldFontSize)),
               ])),
           Expanded(
