@@ -70,6 +70,10 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
         enabled: !widget.disabled,
         initialValue: widget.defaultValue,
         onReset: () => _onChangeValueOutside(widget.defaultValue),
+        onChanged: (val) {
+          if (val == value) return;
+          _onChangeValueOutside(val);
+        },
         builder: (FormFieldState<dynamic> field) {
           return CustomFormField(
               label: widget.label,
