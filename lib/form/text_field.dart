@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:flutter_vant_kit/widgets/field.dart';
 
-class CustomTextField<T> extends StatefulWidget {
+class CustomTextField extends StatefulWidget {
   final String name;
   final String label;
   final double labelWidth;
@@ -13,10 +14,11 @@ class CustomTextField<T> extends StatefulWidget {
   final int rows;
   final int maxLength;
   final bool showWordLimit;
-  final T defaultValue;
+  final String defaultValue;
   final String placeholder;
   final TextInputType keyboardType;
-  final Function(T) onChange;
+  final List<TextInputFormatter> inputFormatters;
+  final Function(String) onChange;
   final bool disabled;
 
   const CustomTextField(this.name,
@@ -32,15 +34,16 @@ class CustomTextField<T> extends StatefulWidget {
       this.placeholder,
       this.keyboardType,
       this.defaultValue,
+        this.inputFormatters,
       this.onChange,
       this.disabled = false})
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _CustomTextFieldState<T>();
+  State<StatefulWidget> createState() => _CustomTextFieldState();
 }
 
-class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
+class _CustomTextFieldState extends State<CustomTextField> {
   TextEditingController _controller = new TextEditingController();
 
   static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
@@ -48,11 +51,11 @@ class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
   @override
   void initState() {
     if (widget.defaultValue != null) {
-      _controller.text = widget.defaultValue.toString();
+      _controller.text = widget.defaultValue;
     } else {
       FormBuilderState formBuilderState = of(context);
       if (formBuilderState != null && formBuilderState.initialValue != null) {
-        _controller.text = formBuilderState.initialValue[widget.name]?.toString();
+        _controller.text = formBuilderState.initialValue[widget.name];
       }
     }
     super.initState();
@@ -66,18 +69,18 @@ class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilderField<T>(
+    return FormBuilderField(
         name: widget.name,
         validator: widget.validator,
         enabled: !widget.disabled,
         initialValue: widget.defaultValue,
-        onReset: () => _controller.text = widget.defaultValue?.toString(),
+        onReset: () => _controller.text = widget.defaultValue,
         onChanged: (val) {
           if (val.toString() == _controller.text) return;
           _controller.text = val.toString();
-          _controller.selection = TextSelection.collapsed(offset: val?.toString().length ?? -1);
+          _controller.selection = TextSelection.collapsed(offset: val?.length ?? -1);
         },
-        builder: (FormFieldState<T> field) {
+        builder: (FormFieldState field) {
           return Field(
               label: widget.label,
               labelWidth: widget.labelWidth ?? Style.fieldLabelWidth,
@@ -91,23 +94,13 @@ class _CustomTextFieldState<T> extends State<CustomTextField<T>> {
               showWordLimit: widget.showWordLimit,
               keyboardType: widget.keyboardType,
               disabled: widget.disabled,
+              inputFormatters: widget.inputFormatters,
               onChange: (val) {
-                var value;
-                if (T == int) {
-                  value = int.parse(val);
-                } else if (T == double) {
-                  value = double.parse(val);
-                } else {
-                  value = val?.toString();
-                }
-                field.didChange(value);
+                field.didChange(val);
                 if (widget.onChange != null) {
-                  widget.onChange(value);
+                  widget.onChange(val);
                 }
               });
         });
-  }
-
-  void patchValue(T value) {
   }
 }
