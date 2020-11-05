@@ -24,16 +24,16 @@ class TreeNodePickerField extends StatefulWidget {
 
   TreeNodePickerField(this.name,
       {Key key,
-      this.nodes = const [],
-      this.label,
-      this.labelWidth,
-      this.required = false,
-      this.validator,
-      this.defaultValue,
-      this.placeholder,
-      this.loading = false,
-      this.disabled = false,
-      this.onConfirm})
+        this.nodes = const [],
+        this.label,
+        this.labelWidth,
+        this.required = false,
+        this.validator,
+        this.defaultValue,
+        this.placeholder,
+        this.loading = false,
+        this.disabled = false,
+        this.onConfirm})
       : super(key: key);
 
   @override
@@ -47,7 +47,8 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
 
   _TreeNodePickerFieldState();
 
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) =>
+      context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -85,20 +86,21 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
                     Expanded(
                         child: widget.loading
                             ? Text("数据加载中...",
-                                style: TextStyle(color: Style.fieldInputTextColor, fontSize: Style.fieldFontSize))
+                            style: TextStyle(color: Style.fieldInputTextColor,
+                                fontSize: Style.fieldFontSize))
                             : isNotEmpty(selectedText)
-                                ? Text(selectedText,
-                                    style: TextStyle(
-                                        color: widget.disabled
-                                            ? Style.fieldInputDisabledTextColor
-                                            : Style.fieldInputTextColor,
-                                        fontSize: Style.fieldFontSize))
-                                : Text(widget.placeholder ?? "请选择" + widget.label,
-                                    style: TextStyle(
-                                        color: widget.disabled
-                                            ? Style.fieldInputDisabledTextColor
-                                            : Style.fieldPlaceholderTextColor,
-                                        fontSize: Style.fieldFontSize))),
+                            ? Text(selectedText,
+                            style: TextStyle(
+                                color: widget.disabled
+                                    ? Style.fieldInputDisabledTextColor
+                                    : Style.fieldInputTextColor,
+                                fontSize: Style.fieldFontSize))
+                            : Text(widget.placeholder ?? "请选择" + widget.label,
+                            style: TextStyle(
+                                color: widget.disabled
+                                    ? Style.fieldInputDisabledTextColor
+                                    : Style.fieldPlaceholderTextColor,
+                                fontSize: Style.fieldFontSize))),
                     Icon(
                       Icons.arrow_forward,
                       color: Colors.grey,
@@ -114,16 +116,31 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
                       ToastUtil.info("无数据");
                       return;
                     }
-                    List<PickerItem> items = DataConverter.treeNode2PickerItem(widget.nodes);
+                    List<PickerItem> items = DataConverter.treeNode2PickerItem(
+                        widget.nodes);
                     showModalBottomSheet(
                         context: context,
                         builder: (BuildContext context) {
                           // 对于1级的，defaultIndex不能是数组
                           int level = DataConverter.getPickerItemDeep(items);
+                          var defaultIndex;
+                          if (index != null) {
+                            if (level == 1 && index.length > 0) {
+                              defaultIndex = index[0];
+                            } else {
+                              defaultIndex = List.generate(level, (i) {
+                                if (index.length > i) {
+                                  return index[i];
+                                } else {
+                                  return 0;
+                                }
+                              });
+                            }
+                          }
                           return Picker(
                               colums: items,
                               level: level,
-                              defaultIndex: level == 1 && index != null && index.length > 0 ? index[0] : index,
+                              defaultIndex: defaultIndex,
                               showToolbar: true,
                               title: "请选择" + widget.label,
                               onCancel: (values, index) {
@@ -136,8 +153,18 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
                                   } else {
                                     index = indies;
                                   }
-                                  selectedText = values.join("/");
-                                  value = getTreeNode(index).value;
+                                  // picker在多维度如果不整齐的话，缺少的会补位"-"
+                                  var tailIndex = values.indexOf("-");
+                                  if (tailIndex == -1) {
+                                    selectedText = values.join("/");
+                                    value = getTreeNode(index).value;
+                                  } else {
+                                    selectedText =
+                                        values.sublist(0, tailIndex).join("/");
+                                    value =
+                                        getTreeNode(index.sublist(0, tailIndex))
+                                            .value;
+                                  }
                                 });
                                 field.didChange(value);
                                 if (widget.onConfirm != null) {
