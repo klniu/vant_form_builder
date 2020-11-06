@@ -142,6 +142,7 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
                               level: level,
                               defaultIndex: defaultIndex,
                               showToolbar: true,
+                              itemHeight: 36,
                               title: "请选择" + widget.label,
                               onCancel: (values, index) {
                                 Navigator.pop(context);

@@ -237,8 +237,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "3a3369bdd1f98d350da1da56b3a5db191f8d60cb"
+      ref: custom
+      resolved-ref: "8536704f01c317ad7605a6d2c6d68e0e5142d3ef"
       url: "git://github.com/klniu/flutter_vant_kit.git"
     source: git
     version: "0.2.5"
