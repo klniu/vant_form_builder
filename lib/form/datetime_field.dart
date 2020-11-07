@@ -42,7 +42,8 @@ class _DateTimeFieldState extends State<DateTimeField> {
 
   String get selectedText => _formatDate(_value);
 
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) =>
+      context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -76,7 +77,9 @@ class _DateTimeFieldState extends State<DateTimeField> {
               errorText: field.errorText,
               child: GestureDetector(
                   child: Row(children: [
-                    Expanded(child: Text(selectedText)),
+                    Expanded(
+                        child: Text(selectedText,
+                            style: TextStyle(fontSize: Style.fieldFontSize))),
                     Icon(
                       Icons.access_time,
                       color: Colors.grey,
@@ -89,7 +92,9 @@ class _DateTimeFieldState extends State<DateTimeField> {
                         confirmText: widget.popupConfirmText ?? "确定",
                         cancelText: widget.popupCancelText ?? "取消",
                         adapter: new DateTimePickerAdapter(
-                          type: widget.isTime ? PickerDateTimeType.kYMDHMS : PickerDateTimeType.kYMD,
+                          type: widget.isTime
+                              ? PickerDateTimeType.kYMDHMS
+                              : PickerDateTimeType.kYMD,
                           isNumberMonth: true,
                           minValue: widget.minTime,
                           maxValue: widget.maxTime,
@@ -98,14 +103,18 @@ class _DateTimeFieldState extends State<DateTimeField> {
                           value: _value,
                         ),
                         backgroundColor: Style.pickerBackgroundColor,
-                        textStyle:
-                            const TextStyle(fontSize: Style.pickerOptionFontSize, color: Style.pickerOptionTextColor),
-                        confirmTextStyle:
-                            const TextStyle(fontSize: Style.pickerActionFontSize, color: Style.pickerActionTextColor),
-                        cancelTextStyle:
-                            const TextStyle(fontSize: Style.pickerActionFontSize, color: Style.pickerActionTextColor),
-                        title:
-                            new Text("选择" + widget.label, style: const TextStyle(fontSize: Style.pickerTitleFontSize)),
+                        textStyle: const TextStyle(
+                            fontSize: Style.pickerOptionFontSize,
+                            color: Style.pickerOptionTextColor),
+                        confirmTextStyle: const TextStyle(
+                            fontSize: Style.pickerActionFontSize,
+                            color: Style.pickerActionTextColor),
+                        cancelTextStyle: const TextStyle(
+                            fontSize: Style.pickerActionFontSize,
+                            color: Style.pickerActionTextColor),
+                        title: new Text("选择" + widget.label,
+                            style: const TextStyle(
+                                fontSize: Style.pickerTitleFontSize)),
                         textAlign: TextAlign.right,
                         selectedTextStyle: TextStyle(color: Colors.blue),
                         delimiter: [
@@ -114,13 +123,16 @@ class _DateTimeFieldState extends State<DateTimeField> {
                               child: Container(
                                 width: 16.0,
                                 alignment: Alignment.center,
-                                child: Text(':', style: TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(':',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
                                 color: Colors.white,
                               ))
                         ],
                         onConfirm: (Picker picker, List value) {
                           setState(() {
-                            _value = (picker.adapter as DateTimePickerAdapter).value;
+                            _value =
+                                (picker.adapter as DateTimePickerAdapter).value;
                           });
                           field.didChange(_value);
                         }).showModal(context);
