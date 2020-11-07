@@ -43,7 +43,8 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
 
   _MultipleSelectFieldState();
 
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) =>
+      context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -78,14 +79,20 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
               child: GestureDetector(
                   child: Row(children: [
                     Expanded(
-                        child: widget.loading ? Text("数据加载中...",
-                      style: TextStyle(color: Style.fieldInputTextColor, fontSize: Style.fieldFontSize))
-                  :
-                  _selected != null && _selected.length > 0
-                            ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
-                            : Text("请选择" + widget.label,
-                                style:
-                                    TextStyle(color: Style.fieldPlaceholderTextColor, fontSize: Style.fieldFontSize))),
+                        child: widget.loading
+                            ? Text("数据加载中...",
+                                style: TextStyle(
+                                    color: Style.fieldInputTextColor,
+                                    fontSize: Style.fieldFontSize))
+                            : _selected != null && _selected.length > 0
+                                ? Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 0.0,
+                                    children: _buildSelectedOptions())
+                                : Text("请选择" + widget.label,
+                                    style: TextStyle(
+                                        color: Style.fieldPlaceholderTextColor,
+                                        fontSize: Style.fieldFontSize))),
                     Icon(
                       Icons.arrow_forward,
                       color: Colors.grey,
@@ -107,7 +114,9 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                       context: context,
                       builder: (BuildContext context) {
                         return MultiSelectDialog(
-                          title: Text("请选择" + widget.label, style: TextStyle(fontSize: Style.pickerTitleFontSize)),
+                          title: Text("请选择" + widget.label,
+                              style: TextStyle(
+                                  fontSize: Style.pickerTitleFontSize)),
                           okButtonLabel: "确定",
                           cancelButtonLabel: "取消",
                           items: items,
@@ -131,12 +140,17 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
 
     if (_selected != null) {
       for (var item in _selected) {
-        var existingItem = widget.nodes.singleWhere((itm) => itm.value == item, orElse: () => null);
+        var existingItem = widget.nodes
+            .singleWhere((itm) => itm.value == item, orElse: () => null);
         if (existingItem == null) {
           continue;
         }
         selectedOptions.add(Chip(
-          labelStyle: widget.chipLabelStyle ?? TextStyle(color: Colors.white, backgroundColor: Colors.lightBlue),
+          labelStyle: widget.chipLabelStyle ??
+              TextStyle(
+                  color: Colors.white,
+                  backgroundColor: Colors.lightBlue,
+                  fontSize: Style.fieldFontSize),
           backgroundColor: widget.chipBackGroundColor ?? Colors.lightBlue,
           label: Text(
             existingItem.title,

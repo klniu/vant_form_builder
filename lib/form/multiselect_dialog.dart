@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_vant_kit/theme/style.dart';
 
 class MultiSelectDialogItem<V> {
   const MultiSelectDialogItem(this.value, this.label);
@@ -25,7 +26,7 @@ class MultiSelectDialog<V> extends StatefulWidget {
       this.title,
       this.okButtonLabel,
       this.cancelButtonLabel,
-      this.labelStyle = const TextStyle(),
+      this.labelStyle = const TextStyle(fontSize: Style.pickerOptionFontSize),
       this.dialogShapeBorder,
       this.checkBoxActiveColor,
       this.checkBoxCheckColor})
@@ -102,17 +103,20 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
 
   Widget _buildItem(MultiSelectDialogItem<V> item) {
     final checked = _selectedValues.contains(item.value);
-    return CheckboxListTile(
-      value: checked,
-      checkColor: widget.checkBoxCheckColor,
-      activeColor: widget.checkBoxActiveColor,
-      title: Text(
-        item.label,
-        style: widget.labelStyle,
-      ),
-      controlAffinity: ListTileControlAffinity.leading,
-      onChanged: (checked) => _onItemCheckedChange(item.value, checked),
-    );
+    return Container(
+        height: 35,
+        alignment: Alignment.centerLeft,
+        child: CheckboxListTile(
+          value: checked,
+          checkColor: widget.checkBoxCheckColor,
+          activeColor: widget.checkBoxActiveColor,
+          title: Text(
+            item.label,
+            style: widget.labelStyle,
+          ),
+          controlAffinity: ListTileControlAffinity.leading,
+          onChanged: (checked) => _onItemCheckedChange(item.value, checked),
+        ));
   }
 }
 
@@ -135,49 +139,49 @@ class SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: double.infinity,
-        height: 50,
-        color: Colors.transparent,
-        padding: EdgeInsets.all(10),
-        child: TextField(
-          decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.lightBlue),
-              ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.lightBlue,
-              ),
-              fillColor: Colors.white,
-              filled: true,
-              suffixIcon: GestureDetector(
-                child: Offstage(
-                  offstage: _delOff,
-                  child: Icon(
-                    Icons.delete_forever,
-                    color: Colors.grey,
-                  ),
+      width: double.infinity,
+      height: 50,
+      color: Colors.transparent,
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.lightBlue),
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.lightBlue,
+            ),
+            fillColor: Colors.white,
+            filled: true,
+            suffixIcon: GestureDetector(
+              child: Offstage(
+                offstage: _delOff,
+                child: Icon(
+                  Icons.delete_forever,
+                  color: Colors.grey,
                 ),
-                onTap: () {
-                  setState(() {
-                    _key = "";
-                    search(_key);
-                  });
-                },
-              )),
-          controller: TextEditingController.fromValue(
-            TextEditingValue(
-              text: _key,
-              selection: TextSelection.fromPosition(
-                TextPosition(
-                  offset: _key == null ? 0 : _key.length, //保证光标在最后
-                ),
+              ),
+              onTap: () {
+                setState(() {
+                  _key = "";
+                  search(_key);
+                });
+              },
+            )),
+        controller: TextEditingController.fromValue(
+          TextEditingValue(
+            text: _key,
+            selection: TextSelection.fromPosition(
+              TextPosition(
+                offset: _key == null ? 0 : _key.length, //保证光标在最后
               ),
             ),
           ),
-          onChanged: search,
         ),
-      );
+        onChanged: search,
+      ),
+    );
   }
 
   ///关键字查找
