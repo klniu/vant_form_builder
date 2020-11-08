@@ -46,7 +46,7 @@ class AttachmentPickerField extends StatefulWidget {
 }
 
 class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
-  List<Attachment> _attachments;
+  List<Attachment> _attachments = [];
   List<String> _images;
   bool _uploading = false;
 
@@ -93,7 +93,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
   Widget _buildPicker(FormFieldState<List<Attachment>> field) {
     if (widget.attachmentType == AttachmentType.Image) {
-      _images ??= _attachments != null ? List.from(_attachments.map((e) => e.url).toList()) : [];
+      _images ??= List.from(_attachments.map((e) => e.url).toList());
       return _buildImagePicker(field);
     } else if (widget.attachmentType == AttachmentType.All) {
       return _buildAllFilePicker(field);
@@ -139,7 +139,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
             }
             return attachment.url;
           } catch (e) {
-            ToastUtil.error("图片上传失败, " + e.message);
+            ToastUtil.error("图片上传失败, " + e.toString());
             setState(() {
               _uploading = false;
             });
@@ -170,7 +170,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         width: 80,
         padding: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: Colors.lightBlue,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
