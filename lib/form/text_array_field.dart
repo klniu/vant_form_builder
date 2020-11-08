@@ -112,6 +112,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
                               fontSize: Style.fieldFontSize,
                             ),
                           ),
+                          style: TextStyle(fontSize: Style.fieldFontSize),
                           keyboardType: widget.keyboardType,
                           enabled: !widget.disabled,
                           onChanged: (val) {
