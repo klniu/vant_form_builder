@@ -20,6 +20,7 @@ class CustomTextField extends StatefulWidget {
   final List<TextInputFormatter> inputFormatters;
   final Function(String) onChange;
   final bool disabled;
+  final TextAlign inputAlign;
 
   const CustomTextField(this.name,
       {Key key,
@@ -34,9 +35,10 @@ class CustomTextField extends StatefulWidget {
       this.placeholder,
       this.keyboardType,
       this.defaultValue,
-        this.inputFormatters,
+      this.inputFormatters,
       this.onChange,
-      this.disabled = false})
+      this.disabled = false,
+      this.inputAlign = TextAlign.start})
       : super(key: key);
 
   @override
@@ -46,7 +48,8 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   TextEditingController _controller = new TextEditingController();
 
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) =>
+      context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -78,7 +81,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         onChanged: (val) {
           if (val.toString() == _controller.text) return;
           _controller.text = val.toString();
-          _controller.selection = TextSelection.collapsed(offset: val?.length ?? -1);
+          _controller.selection =
+              TextSelection.collapsed(offset: val?.length ?? -1);
         },
         builder: (FormFieldState field) {
           return Field(
@@ -89,6 +93,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               require: widget.required,
               controller: _controller,
               type: widget.type ?? "text",
+              inputAlign: widget.inputAlign,
               rows: widget.rows,
               maxLength: widget.maxLength,
               showWordLimit: widget.showWordLimit,
