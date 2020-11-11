@@ -13,7 +13,14 @@ class DetailRow extends StatelessWidget {
   final EdgeInsets padding;
 
   const DetailRow(this.label,
-      {Key key, this.labelWidth, this.child, this.text = "", this.textColor, this.textFontWeight, this.required = false, this.padding})
+      {Key key,
+      this.labelWidth,
+      this.child,
+      this.text = "",
+      this.textColor,
+      this.textFontWeight,
+      this.required = false,
+      this.padding})
       : super(key: key);
 
   @override
@@ -31,7 +38,11 @@ class DetailRow extends StatelessWidget {
                         fontSize: Style.fieldFontSize,
                         color: Style.fieldRequiredColor,
                       )),
-                Text(label, textAlign: TextAlign.start, style: TextStyle(fontSize: Style.fieldFontSize)),
+                Flexible(
+                    child: Text(label,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: Style.fieldFontSize))),
               ])),
           Expanded(
               child: child ??

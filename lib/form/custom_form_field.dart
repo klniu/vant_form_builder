@@ -33,10 +33,10 @@ class _CustomFormFieldState extends State<CustomFormField> {
                         fontSize: Style.fieldFontSize,
                         color: Style.fieldRequiredColor,
                       )),
-                Text(widget.label,
+                Flexible(child: Text(widget.label,
                     textAlign: TextAlign.start,
                     style: TextStyle(fontSize: Style.fieldFontSize),
-                    overflow: TextOverflow.clip),
+                    overflow: TextOverflow.ellipsis)),
               ])),
           if (isNotBlank(widget.errorText)) SizedBox(height: 5),
           if (isNotBlank(widget.errorText))
