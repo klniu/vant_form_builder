@@ -73,7 +73,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
     return AlertDialog(
       title: widget.title,
       shape: widget.dialogShapeBorder,
-      contentPadding: EdgeInsets.only(top: 12.0),
+      contentPadding: EdgeInsets.only(top: 2.0),
       content: Column(children: [
         SearchBar(widget.items, (results) {
           setState(() {
@@ -82,12 +82,14 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
         }),
         Expanded(
             child: SingleChildScrollView(
-          child: ListTileTheme(
+          child: Padding(
+              padding: EdgeInsets.only(bottom: 20),
+              child: ListTileTheme(
             contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
             child: ListBody(
               children: _searchResults.map(_buildItem).toList(),
             ),
-          ),
+          )),
         )),
       ]),
       actions: <Widget>[
@@ -105,9 +107,8 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 
   Widget _buildItem(TreeNode item) {
     final checked = _selectedValues.contains(item.value);
-    return Container(
-        height: 35,
-        alignment: Alignment.centerLeft,
+    return SizedBox(
+        height: 32,
         child: CheckboxListTile(
           value: checked,
           checkColor: widget.checkBoxCheckColor,

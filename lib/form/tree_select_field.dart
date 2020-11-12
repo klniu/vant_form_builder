@@ -128,7 +128,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
 
                     if (selectedValues != null) {
                       setState(() {
-                        _selected = List.from(selectedValues.map((e) => e));
+                        _selected = List.from(selectedValues);
                       });
                       field.didChange(_selected);
                       if (widget.onConfirm != null) {
