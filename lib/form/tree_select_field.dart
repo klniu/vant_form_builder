@@ -148,15 +148,21 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
         if (existingItem == null) {
           continue;
         }
-        selectedOptions.add(Chip(
-          labelStyle: widget.chipLabelStyle ??
-              TextStyle(
-                  color: Colors.white,
-                  backgroundColor: Colors.lightBlue,
-                  fontSize: Style.fieldFontSize),
-          backgroundColor: widget.chipBackGroundColor ?? Colors.lightBlue,
-          label: Text(
+        selectedOptions.add(Container(
+          padding: EdgeInsets.all(3.0),
+          margin: EdgeInsets.symmetric(vertical: 3),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            border: Border.all(
+              color: Colors.lightBlue,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            color: Colors.lightBlue,
+          ),
+          child: Text(
             existingItem.text,
+            style: TextStyle(fontSize: Style.fieldFontSize, color: Colors.white),
             overflow: TextOverflow.ellipsis,
           ),
         ));
