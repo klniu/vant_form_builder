@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vant_kit/theme/style.dart';
+import 'package:vant_form_builder/model/tree_node.dart';
+import 'package:vant_form_builder/util/toast_util.dart';
 
-class MultiSelectDialogItem<V> {
-  const MultiSelectDialogItem(this.value, this.label);
-
-  final V value;
-  final String label;
-}
-
-class MultiSelectDialog<V> extends StatefulWidget {
-  final List<MultiSelectDialogItem<V>> items;
-  final List<V> initialSelectedValues;
+class MultiSelectDialog extends StatefulWidget {
+  final List<TreeNode> items;
+  final List initialSelectedValues;
   final Widget title;
   final String okButtonLabel;
   final String cancelButtonLabel;
@@ -18,6 +13,7 @@ class MultiSelectDialog<V> extends StatefulWidget {
   final ShapeBorder dialogShapeBorder;
   final Color checkBoxCheckColor;
   final Color checkBoxActiveColor;
+  final int limit;
 
   MultiSelectDialog(
       {Key key,
@@ -29,16 +25,18 @@ class MultiSelectDialog<V> extends StatefulWidget {
       this.labelStyle = const TextStyle(fontSize: Style.pickerOptionFontSize),
       this.dialogShapeBorder,
       this.checkBoxActiveColor,
-      this.checkBoxCheckColor})
+      this.checkBoxCheckColor,
+      this.limit = 1000,
+      })
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _MultiSelectDialogState<V>();
+  State<StatefulWidget> createState() => _MultiSelectDialogState();
 }
 
-class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
-  final _selectedValues = List<V>();
-  List<MultiSelectDialogItem<V>> _searchResults;
+class _MultiSelectDialogState extends State<MultiSelectDialog> {
+  final _selectedValues = List();
+  List<TreeNode> _searchResults;
 
   void initState() {
     super.initState();
@@ -48,10 +46,14 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
     }
   }
 
-  void _onItemCheckedChange(V itemValue, bool checked) {
+  void _onItemCheckedChange(dynamic itemValue, bool checked) {
     setState(() {
       if (checked) {
-        _selectedValues.add(itemValue);
+        if (_selectedValues.length > widget.limit) {
+          ToastUtil.error("最多只能选择${widget.limit}项");
+        } else {
+          _selectedValues.add(itemValue);
+        }
       } else {
         _selectedValues.remove(itemValue);
       }
@@ -73,7 +75,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
       shape: widget.dialogShapeBorder,
       contentPadding: EdgeInsets.only(top: 12.0),
       content: Column(children: [
-        SearchBar<V>(widget.items, (results) {
+        SearchBar(widget.items, (results) {
           setState(() {
             _searchResults = results;
           });
@@ -101,7 +103,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
     );
   }
 
-  Widget _buildItem(MultiSelectDialogItem<V> item) {
+  Widget _buildItem(TreeNode item) {
     final checked = _selectedValues.contains(item.value);
     return Container(
         height: 35,
@@ -111,7 +113,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
           checkColor: widget.checkBoxCheckColor,
           activeColor: widget.checkBoxActiveColor,
           title: Text(
-            item.label,
+            item.title,
             style: widget.labelStyle,
           ),
           controlAffinity: ListTileControlAffinity.leading,
@@ -120,8 +122,8 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
   }
 }
 
-class SearchBar<V> extends StatefulWidget {
-  final List<MultiSelectDialogItem<V>> list;
+class SearchBar extends StatefulWidget {
+  final List<TreeNode> list;
   final Function onResult;
 
   SearchBar(this.list, this.onResult);
@@ -187,7 +189,7 @@ class SearchBarState extends State<SearchBar> {
   ///关键字查找
   void search(String value) {
     _key = value;
-    List<MultiSelectDialogItem> tmp = List();
+    List<TreeNode> tmp = List();
     if (value.isEmpty) {
       //如果关键字为空，代表全匹配
       _delOff = true;
@@ -195,8 +197,8 @@ class SearchBarState extends State<SearchBar> {
     } else {
       //如果有关键字，那么就去查找关键字
       _delOff = false;
-      for (MultiSelectDialogItem n in widget.list) {
-        if (n.label.toLowerCase().contains(value.toLowerCase())) {
+      for (TreeNode n in widget.list) {
+        if (n.title.toLowerCase().contains(value.toLowerCase())) {
           //匹配大小写
           tmp.add(n);
         }

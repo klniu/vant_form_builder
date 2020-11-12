@@ -3,16 +3,23 @@ import 'package:json_annotation/json_annotation.dart';
 part 'tree_node.g.dart';
 
 @JsonSerializable()
-class TreeNode {
+class TreeNode<T> {
   String id;
   String parentId;
-  List<TreeNode> children;
-  bool hasChildren;
+  List<TreeNode<T>> children;
   String title;
   String key;
-  String value;
+  T value;
+  int depth;
 
-  TreeNode({this.id, this.parentId, this.children, this.hasChildren, this.title, this.key, this.value});
+  bool expand;
+
+  bool get hasChildren => children != null && children.length > 0;
+
+  TreeNode(this.title, this.value,
+      {this.id, this.parentId, this.children, this.key, this.depth}) {
+    this.expand = false;
+  }
 
   factory TreeNode.fromJson(Map<String, dynamic> json) => _$TreeNodeFromJson(json);
   Map<String, dynamic> toJson() => _$TreeNodeToJson(this);

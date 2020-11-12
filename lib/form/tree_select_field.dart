@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_vant_kit/theme/style.dart';
+import 'package:vant_form_builder/form/custom_form_field.dart';
+import 'package:vant_form_builder/form/tree_select_view.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 
-import 'custom_form_field.dart';
-import 'multiselect_dialog.dart';
-
-class MultipleSelectField extends StatefulWidget {
+class TreeSelectField extends StatefulWidget {
   final String name;
   final List<TreeNode> nodes;
   final String label;
@@ -21,7 +20,7 @@ class MultipleSelectField extends StatefulWidget {
   final int limit;
   final dynamic Function(List) onConfirm;
 
-  MultipleSelectField(this.name,
+  TreeSelectField(this.name,
       {Key key,
       this.nodes = const [],
       this.label,
@@ -33,18 +32,18 @@ class MultipleSelectField extends StatefulWidget {
       this.chipBackGroundColor,
       this.loading = false,
       this.onConfirm,
-      this.limit = 1000
+      this.limit = 1000,
       })
       : super(key: key);
 
   @override
-  _MultipleSelectFieldState createState() => _MultipleSelectFieldState();
+  _TreeSelectFieldState createState() => _TreeSelectFieldState();
 }
 
-class _MultipleSelectFieldState extends State<MultipleSelectField> {
+class _TreeSelectFieldState extends State<TreeSelectField> {
   List<String> _selected;
 
-  _MultipleSelectFieldState();
+  _TreeSelectFieldState();
 
   static FormBuilderState of(BuildContext context) =>
       context.findAncestorStateOfType<FormBuilderState>();
@@ -108,17 +107,18 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                       ToastUtil.info("无数据");
                       return;
                     }
+
                     List selectedValues = await showDialog<List>(
                       context: context,
                       builder: (BuildContext context) {
-                        return MultiSelectDialog(
+                        return TreeSelectView(
+                          widget.nodes,
                           title: Text("请选择" + widget.label,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: Style.pickerTitleFontSize)),
                           okButtonLabel: "确定",
                           cancelButtonLabel: "取消",
-                          items: widget.nodes,
                           initialSelectedValues: _selected,
                           limit: widget.limit,
                         );
@@ -163,13 +163,5 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
       }
     }
     return selectedOptions;
-  }
-
-  TreeNode getTreeNode(List<int> indices) {
-    TreeNode node = widget.nodes[indices[0]];
-    for (var index in indices.sublist(1)) {
-      node = node.children[index];
-    }
-    return node;
   }
 }
