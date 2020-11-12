@@ -13,11 +13,12 @@ class TreeNode<T> {
   int depth;
 
   bool expand;
+  TreeNode<T> parent;
 
   bool get hasChildren => children != null && children.length > 0;
 
-  TreeNode(this.title, this.value,
-      {this.id, this.parentId, this.children, this.key, this.depth}) {
+  TreeNode(this.title, this.value, this.id,
+      {this.parentId, this.children, this.key, this.depth}) {
     this.expand = false;
   }
 

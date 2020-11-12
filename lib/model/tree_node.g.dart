@@ -10,7 +10,7 @@ TreeNode _$TreeNodeFromJson(Map<String, dynamic> json) {
   return TreeNode(
     json['title'] as String,
     json['value'] as String,
-    id: json['id'] as String,
+    json['id'] as String,
     parentId: json['parentId'] as String,
     children: (json['children'] as List)
         ?.map((e) =>

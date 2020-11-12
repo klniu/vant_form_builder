@@ -4,6 +4,7 @@ import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:vant_form_builder/form/custom_form_field.dart';
 import 'package:vant_form_builder/form/tree_select_view.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
+import 'package:vant_form_builder/util/data_converter.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 
 class TreeSelectField extends StatefulWidget {
@@ -127,7 +128,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
 
                     if (selectedValues != null) {
                       setState(() {
-                        _selected = List.from(selectedValues);
+                        _selected = List.from(selectedValues.map((e) => e));
                       });
                       field.didChange(_selected);
                       if (widget.onConfirm != null) {
@@ -143,8 +144,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
 
     if (_selected != null) {
       for (var item in _selected) {
-        var existingItem = widget.nodes
-            .singleWhere((itm) => itm.value == item, orElse: () => null);
+        var existingItem = DataConverter.getIndexInTreeNodesByValue(item, widget.nodes);
         if (existingItem == null) {
           continue;
         }
@@ -156,7 +156,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                   fontSize: Style.fieldFontSize),
           backgroundColor: widget.chipBackGroundColor ?? Colors.lightBlue,
           label: Text(
-            existingItem.title,
+            existingItem.text,
             overflow: TextOverflow.ellipsis,
           ),
         ));
