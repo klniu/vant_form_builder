@@ -15,20 +15,19 @@ class MultiSelectDialog extends StatefulWidget {
   final Color checkBoxActiveColor;
   final int limit;
 
-  MultiSelectDialog(
-      {Key key,
-      this.items,
-      this.initialSelectedValues,
-      this.title,
-      this.okButtonLabel,
-      this.cancelButtonLabel,
-      this.labelStyle = const TextStyle(fontSize: Style.pickerOptionFontSize),
-      this.dialogShapeBorder,
-      this.checkBoxActiveColor,
-      this.checkBoxCheckColor,
-      this.limit = 1000,
-      })
-      : super(key: key);
+  MultiSelectDialog({
+    Key key,
+    this.items,
+    this.initialSelectedValues,
+    this.title,
+    this.okButtonLabel,
+    this.cancelButtonLabel,
+    this.labelStyle = const TextStyle(fontSize: Style.pickerOptionFontSize),
+    this.dialogShapeBorder,
+    this.checkBoxActiveColor,
+    this.checkBoxCheckColor,
+    this.limit = 1000,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MultiSelectDialogState();
@@ -85,11 +84,11 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
           child: Padding(
               padding: EdgeInsets.only(bottom: 20),
               child: ListTileTheme(
-            contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
-            child: ListBody(
-              children: _searchResults.map(_buildItem).toList(),
-            ),
-          )),
+                contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
+                child: ListBody(
+                  children: _searchResults.map(_buildItem).toList(),
+                ),
+              )),
         )),
       ]),
       actions: <Widget>[
@@ -107,19 +106,17 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 
   Widget _buildItem(TreeNode item) {
     final checked = _selectedValues.contains(item.value);
-    return SizedBox(
-        height: 32,
-        child: CheckboxListTile(
-          value: checked,
-          checkColor: widget.checkBoxCheckColor,
-          activeColor: widget.checkBoxActiveColor,
-          title: Text(
-            item.title,
-            style: widget.labelStyle,
-          ),
-          controlAffinity: ListTileControlAffinity.leading,
-          onChanged: (checked) => _onItemCheckedChange(item.value, checked),
-        ));
+    return CheckboxListTile(
+      value: checked,
+      checkColor: widget.checkBoxCheckColor,
+      activeColor: widget.checkBoxActiveColor,
+      title: Text(
+        item.title,
+        style: widget.labelStyle,
+      ),
+      controlAffinity: ListTileControlAffinity.leading,
+      onChanged: (checked) => _onItemCheckedChange(item.value, checked),
+    );
   }
 }
 

@@ -152,6 +152,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
         selectedOptions.add(Container(
           padding: EdgeInsets.all(3.0),
           height: 23,
+          margin: EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             border: Border.all(
