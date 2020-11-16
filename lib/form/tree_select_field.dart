@@ -150,7 +150,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
         }
         selectedOptions.add(Container(
           padding: EdgeInsets.all(3.0),
-          height: 23,
+          height: 26,
           margin: EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
