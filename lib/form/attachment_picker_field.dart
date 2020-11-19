@@ -28,8 +28,7 @@ class AttachmentPickerField extends StatefulWidget {
   /// 最大附件数量
   final List<Attachment> defaultAttachments;
 
-  const AttachmentPickerField(
-      this.name, this.attachmentType, this.uploadService,
+  const AttachmentPickerField(this.name, this.attachmentType, this.uploadService,
       {Key key,
       this.label,
       this.labelWidth,
@@ -51,11 +50,9 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
   List<String> _images;
   bool _uploading = false;
 
-  int get _remainingItemCount =>
-      widget.maxCount == null ? null : widget.maxCount - _attachments.length;
+  int get _remainingItemCount => widget.maxCount == null ? null : widget.maxCount - _attachments.length;
 
-  static FormBuilderState of(BuildContext context) =>
-      context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -79,9 +76,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         enabled: !widget.disabled,
         onReset: () {
           setState(() {
-            _attachments = widget.defaultAttachments == null
-                ? []
-                : [...widget.defaultAttachments];
+            _attachments = widget.defaultAttachments == null ? [] : [...widget.defaultAttachments];
           });
         },
         builder: (FormFieldState<List<Attachment>> field) {
@@ -120,37 +115,30 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           ByteData byteData;
           // 压缩图片
           if (file.originalHeight > 1000)
-            byteData = await file.getThumbByteData(
-                (file.originalWidth / file.originalHeight * 1000).round(), 1000,
+            byteData = await file.getThumbByteData((file.originalWidth / file.originalHeight * 1000).round(), 1000,
                 quality: 90);
           if (file.originalWidth > 1000) {
-            byteData = await file.getThumbByteData(
-                1000, (file.originalHeight / file.originalWidth * 1000).round(),
+            byteData = await file.getThumbByteData(1000, (file.originalHeight / file.originalWidth * 1000).round(),
                 quality: 90);
           } else {
             byteData = await file.getByteData(quality: 90);
           }
           List<int> imageData = byteData.buffer.asUint8List();
-          MultipartFile multipartFile =
-              MultipartFile.fromBytes(imageData, filename: files[0].name);
-          try {
-            Attachment attachment = await widget.uploadService(multipartFile);
+          MultipartFile multipartFile = MultipartFile.fromBytes(imageData, filename: files[0].name);
+          Attachment attachment = await widget.uploadService(multipartFile);
+          if (attachment != null) {
             setState(() {
               _attachments.add(attachment);
-              _uploading = false;
             });
             field.didChange(_attachments);
             if (widget.onChange != null) {
               widget.onChange(attachment);
             }
-            return attachment.url;
-          } catch (e) {
-            ToastUtil.error("图片上传失败, " + e.toString());
-            setState(() {
-              _uploading = false;
-            });
           }
-          return null;
+          setState(() {
+            _uploading = false;
+          });
+          return attachment?.url;
         },
         onRemove: (file) {
           if (widget.disabled) {
@@ -192,13 +180,10 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              if (widget.maxCount != null)
-                Text("${_attachments.length}/${widget.maxCount}"),
+              if (widget.maxCount != null) Text("${_attachments.length}/${widget.maxCount}"),
               InkWell(
                 child: const Text("选择文件"),
-                onTap: (_remainingItemCount != null &&
-                        _remainingItemCount <= 0 &&
-                        !widget.disabled)
+                onTap: (_remainingItemCount != null && _remainingItemCount <= 0 && !widget.disabled)
                     ? null
                     : () => pickFiles(field),
               ),
@@ -233,8 +218,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         _uploading = true;
       });
       for (var file in result.files) {
-        MultipartFile multipartFile =
-            MultipartFile.fromBytes(file.bytes, filename: file.name);
+        MultipartFile multipartFile = MultipartFile.fromBytes(file.bytes, filename: file.name);
         Attachment attachment = await widget.uploadService(multipartFile);
         setState(() => _attachments.add(attachment));
         field.didChange(_attachments);
