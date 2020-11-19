@@ -178,6 +178,9 @@ class TreeSelectViewState extends State<TreeSelectView>
     /// 做法是遍历整个list列表，将直接挂在该机构下面的节点增加到一个临时列表中，
     ///然后将临时列表插入到被点击的机构下面
     void _expand(TreeNode node) {
+      if (!node.hasChildren) {
+        return;
+      }
       //找到插入点
       int index = -1;
       int length = expand.length;
