@@ -2,7 +2,7 @@ name: vant_form_builder
 description: Form widgets for flutter_form_builder using vant ui kit
 version: 0.0.1
 author:
-homepage:
+homepage: https://github.com/klniu/vant_form_builder
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -17,10 +17,13 @@ dependencies:
     git:
       url: git://github.com/klniu/flutter_vant_kit.git
       ref: custom
-  flutter_form_builder: ^4.0.0-pre.5
+
+  flutter_form_builder: ^4.2.0
   dio: ^3.0.10
   fluttertoast: ^7.1.1
   flutter_picker: ^1.1.5
+  file_picker: ^2.1.6
+  permission_handler: ^5.1.0+2
 
 dev_dependencies:
   flutter_test:

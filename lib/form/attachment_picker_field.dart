@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:image/image.dart' as img;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -9,18 +12,21 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:vant_form_builder/model/attachment_type.dart';
 import 'package:vant_form_builder/model/attachment.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
+import 'package:intl/intl.dart';
+import 'package:http_parser/http_parser.dart';
 
 import 'custom_form_field.dart';
 
 class AttachmentPickerField extends StatefulWidget {
   final String name;
   final AttachmentType attachmentType;
+  final bool onlyCamera;
   final String label;
   final double labelWidth;
   final bool required;
   final FormFieldValidator validator;
   final int maxCount;
-  final Function(Attachment) onChange;
+  final Function(List<Attachment>) onChange;
   final Function(Attachment) onRemove;
   final bool disabled;
   final Future Function(MultipartFile) uploadService;
@@ -30,6 +36,7 @@ class AttachmentPickerField extends StatefulWidget {
 
   const AttachmentPickerField(this.name, this.attachmentType, this.uploadService,
       {Key key,
+      this.onlyCamera: false,
       this.label,
       this.labelWidth,
       this.required = false,
@@ -49,6 +56,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
   List<Attachment> _attachments = [];
   List<String> _images;
   bool _uploading = false;
+  int uploadCount = 1;
 
   int get _remainingItemCount => widget.maxCount == null ? null : widget.maxCount - _attachments.length;
 
@@ -104,41 +112,76 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
       ImageWall(
         images: _images,
         count: widget.maxCount,
+        onlyCamera: widget.onlyCamera,
         onUpload: (files) async {
-          if (files.length != 1 || widget.disabled) {
+          if (files.isEmpty() || widget.disabled) {
             return null;
           }
           setState(() {
             _uploading = true;
           });
-          var file = files[0];
-          ByteData byteData;
-          // 压缩图片
-          if (file.originalHeight > 1000)
-            byteData = await file.getThumbByteData((file.originalWidth / file.originalHeight * 1000).round(), 1000,
-                quality: 90);
-          if (file.originalWidth > 1000) {
-            byteData = await file.getThumbByteData(1000, (file.originalHeight / file.originalWidth * 1000).round(),
-                quality: 90);
-          } else {
-            byteData = await file.getByteData(quality: 90);
-          }
-          List<int> imageData = byteData.buffer.asUint8List();
-          MultipartFile multipartFile = MultipartFile.fromBytes(imageData, filename: files[0].name);
-          Attachment attachment = await widget.uploadService(multipartFile);
-          if (attachment != null) {
+          uploadCount = 0;
+
+          List<Attachment> attachments = [];
+          // 从相机来，只有一张照片
+          if (files.pickedFile != null) {
             setState(() {
-              _attachments.add(attachment);
+              ++uploadCount;
             });
-            field.didChange(_attachments);
-            if (widget.onChange != null) {
-              widget.onChange(attachment);
+            img.Image image = img.decodeImage(await File(files.pickedFile.path).readAsBytes());
+            // 压缩图片
+            if (image.height > 1000) {
+              image = img.copyResize(image, height: 1000);
+            } else if (image.width > 1000) {
+              image = img.copyResize(image, width: 1000);
+            }
+            MultipartFile multipartFile = MultipartFile.fromBytes(
+              img.encodeJpg(image),
+              filename: "DCIM_${new DateFormat("yyyyMMddHHmmss").format(DateTime.now())}.jpg",
+              contentType: MediaType.parse('image/jpeg'),
+            );
+            Attachment attachment = await widget.uploadService(multipartFile);
+            if (attachment != null) {
+              setState(() {
+                attachments.add(attachment);
+              });
+            }
+          } else if (files.assets != null && files.assets.length > 0) {
+            var assets = files.assets;
+            for (var file in assets) {
+              setState(() {
+                ++uploadCount;
+              });
+              ByteData byteData;
+              // 压缩图片
+              if (file.originalHeight > 1000) {
+                byteData = await file.getThumbByteData((file.originalWidth / file.originalHeight * 1000).round(), 1000,
+                    quality: 90);
+              } else if (file.originalWidth > 1000) {
+                byteData = await file.getThumbByteData(1000, (file.originalHeight / file.originalWidth * 1000).round(),
+                    quality: 90);
+              } else {
+                byteData = await file.getByteData(quality: 90);
+              }
+              List<int> imageData = byteData.buffer.asUint8List();
+              MultipartFile multipartFile = MultipartFile.fromBytes(imageData, filename: file.name);
+              Attachment attachment = await widget.uploadService(multipartFile);
+              if (attachment != null) {
+                setState(() {
+                  attachments.add(attachment);
+                });
+              }
             }
           }
+          field.didChange(attachments);
+          if (widget.onChange != null) {
+            widget.onChange(attachments);
+          }
           setState(() {
+            _attachments.addAll(attachments);
             _uploading = false;
           });
-          return attachment?.url;
+          return attachments.map((e) => e.url).toList();
         },
         onRemove: (file) {
           if (widget.disabled) {
@@ -161,7 +204,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
   Widget _uploadingWidget() {
     return Container(
-        width: 80,
+        width: 180,
         padding: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: Colors.lightBlue,
@@ -169,7 +212,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         alignment: Alignment.center,
-        child: Text("上传中...", style: TextStyle(color: Colors.white)));
+        child: Text("正在上传，第$uploadCount张...", style: TextStyle(color: Colors.white)));
   }
 
   Widget _buildAllFilePicker(FormFieldState<List<Attachment>> field) {
