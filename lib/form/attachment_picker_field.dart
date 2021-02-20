@@ -116,7 +116,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         images: _images,
         count: widget.maxCount,
         onlyCamera: widget.onlyCamera,
-        multiple: true,
+        multiple: widget.multiple,
         onUpload: (files) async {
           if (files.isEmpty() || widget.disabled) {
             return null;
