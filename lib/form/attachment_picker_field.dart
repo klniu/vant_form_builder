@@ -36,16 +36,16 @@ class AttachmentPickerField extends StatefulWidget {
 
   const AttachmentPickerField(this.name, this.attachmentType, this.uploadService,
       {Key key,
-      this.onlyCamera: false,
-      this.label,
-      this.labelWidth,
-      this.required = false,
-      this.validator,
-      this.maxCount = 20,
-      this.defaultAttachments,
-      this.onChange,
-      this.onRemove,
-      this.disabled = false})
+        this.onlyCamera: false,
+        this.label,
+        this.labelWidth,
+        this.required = false,
+        this.validator,
+        this.maxCount = 20,
+        this.defaultAttachments,
+        this.onChange,
+        this.onRemove,
+        this.disabled = false})
       : super(key: key);
 
   @override
@@ -173,14 +173,14 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
               }
             }
           }
-          field.didChange(attachments);
-          if (widget.onChange != null) {
-            widget.onChange(attachments);
-          }
           setState(() {
             _attachments.addAll(attachments);
             _uploading = false;
           });
+          field.didChange(_attachments);
+          if (widget.onChange != null) {
+            widget.onChange(_attachments);
+          }
           return attachments.map((e) => e.url).toList();
         },
         onRemove: (file) {
@@ -212,7 +212,12 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         alignment: Alignment.center,
-        child: Text("正在上传，第$uploadCount张...", style: TextStyle(color: Colors.white)));
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          SizedBox(child: CircularProgressIndicator(backgroundColor: Colors.white, strokeWidth: 2), width: 16,
+              height: 16),
+          SizedBox(width: 10),
+          Text("正在上传，第$uploadCount张...", style: TextStyle(color: Colors.white))
+        ]));
   }
 
   Widget _buildAllFilePicker(FormFieldState<List<Attachment>> field) {
@@ -242,7 +247,9 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
   Future<void> pickFiles(FormFieldState field) async {
     FilePickerResult result;
     try {
-      if (await Permission.storage.request().isGranted) {
+      if (await Permission.storage
+          .request()
+          .isGranted) {
         result = await FilePicker.platform.pickFiles(withData: true);
       } else {
         ToastUtil.error("存储权限获取失败");
@@ -286,7 +293,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           spacing: 10,
           children: List.generate(
             _attachments.length,
-            (index) {
+                (index) {
               return Stack(
                 alignment: Alignment.topRight,
                 children: <Widget>[
