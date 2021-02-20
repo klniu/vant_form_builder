@@ -25,6 +25,8 @@ class AttachmentPickerField extends StatefulWidget {
   final double labelWidth;
   final bool required;
   final FormFieldValidator validator;
+  /// 允许一次选择多张照片
+  final bool multiple;
   final int maxCount;
   final Function(List<Attachment>) onChange;
   final Function(Attachment) onRemove;
@@ -41,6 +43,7 @@ class AttachmentPickerField extends StatefulWidget {
         this.labelWidth,
         this.required = false,
         this.validator,
+        this.multiple = false,
         this.maxCount = 20,
         this.defaultAttachments,
         this.onChange,
@@ -113,6 +116,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         images: _images,
         count: widget.maxCount,
         onlyCamera: widget.onlyCamera,
+        multiple: true,
         onUpload: (files) async {
           if (files.isEmpty() || widget.disabled) {
             return null;
@@ -216,7 +220,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           SizedBox(child: CircularProgressIndicator(backgroundColor: Colors.white, strokeWidth: 2), width: 16,
               height: 16),
           SizedBox(width: 10),
-          Text("正在上传，第$uploadCount张...", style: TextStyle(color: Colors.white))
+          Text("正在上传，第$uploadCount个...", style: TextStyle(color: Colors.white))
         ]));
   }
 
