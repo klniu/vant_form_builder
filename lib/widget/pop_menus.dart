@@ -49,7 +49,7 @@ class JhPopMenus {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Image.asset('assets/images/popMenus/ic_menu_up_arrow.png', width: 28, height: 5),
+            Icon(Icons.arrow_drop_up_outlined, size: 28),
             ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Container(color: _bgColor, width: 160, height: cellH, child: _buildMenuCell(dataArr)))
