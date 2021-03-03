@@ -222,11 +222,9 @@ packages:
   flutter_vant_kit:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "custom_0.0.1"
-      resolved-ref: "38f833fd60cb2aa2e879cf610657f92de127a085"
-      url: "git://github.com/klniu/flutter_vant_kit.git"
-    source: git
+      path: "../flutter_vant_kit"
+      relative: true
+    source: path
     version: "0.2.5"
   flutter_web_plugins:
     dependency: transitive

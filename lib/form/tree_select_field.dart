@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_vant_kit/theme/style.dart';
-import 'package:vant_form_builder/form/custom_form_field.dart';
 import 'package:vant_form_builder/form/tree_select_view.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/data_converter.dart';
@@ -11,7 +10,7 @@ class TreeSelectField extends StatefulWidget {
   final String name;
   final List<TreeNode> nodes;
   final String label;
-  final double labelWidth;
+  final String placeholder;
   final bool required;
   final FormFieldValidator validator;
   final List<String> defaultValue;
@@ -21,21 +20,21 @@ class TreeSelectField extends StatefulWidget {
   final int limit;
   final dynamic Function(List) onConfirm;
 
-  TreeSelectField(this.name,
-      {Key key,
-      this.nodes = const [],
-      this.label,
-      this.labelWidth,
-      this.required = false,
-      this.validator,
-      this.defaultValue,
-      this.chipLabelStyle,
-      this.chipBackGroundColor,
-      this.loading = false,
-      this.onConfirm,
-      this.limit = 1000,
-      })
-      : super(key: key);
+  TreeSelectField(
+    this.name, {
+    Key key,
+    this.nodes = const [],
+    this.label,
+    this.placeholder,
+    this.required = false,
+    this.validator,
+    this.defaultValue,
+    this.chipLabelStyle,
+    this.chipBackGroundColor,
+    this.loading = false,
+    this.onConfirm,
+    this.limit = 1000,
+  }) : super(key: key);
 
   @override
   _TreeSelectFieldState createState() => _TreeSelectFieldState();
@@ -46,8 +45,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
 
   _TreeSelectFieldState();
 
-  static FormBuilderState of(BuildContext context) =>
-      context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -74,68 +72,59 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
           });
         },
         builder: (FormFieldState<dynamic> field) {
-          return CustomFormField(
-              label: widget.label,
-              labelWidth: widget.labelWidth,
-              required: widget.required,
-              errorText: field.errorText,
-              child: GestureDetector(
-                  child: Row(children: [
-                    Expanded(
-                        child: widget.loading
-                            ? Text("数据加载中...",
-                                style: TextStyle(
-                                    color: Style.fieldInputTextColor,
-                                    fontSize: Style.fieldFontSize))
-                            : _selected != null && _selected.length > 0
-                                ? Wrap(
-                                    spacing: 8.0,
-                                    runSpacing: 0.0,
-                                    children: _buildSelectedOptions())
-                                : Text("请选择" + widget.label,
-                                    style: TextStyle(
-                                        color: Style.fieldPlaceholderTextColor,
-                                        fontSize: Style.fieldFontSize))),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: Colors.grey,
-                      size: 18,
-                    )
-                  ]),
-                  onTap: () async {
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                    if (widget.nodes == null || widget.nodes.length == 0) {
-                      ToastUtil.info("无数据");
-                      return;
-                    }
+          return GestureDetector(
+              onTap: () async {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                if (widget.nodes == null || widget.nodes.length == 0) {
+                  ToastUtil.info("无数据");
+                  return;
+                }
 
-                    List selectedValues = await showDialog<List>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return TreeSelectView(
-                          widget.nodes,
-                          title: Text("请选择" + widget.label,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: Style.pickerTitleFontSize)),
-                          okButtonLabel: "确定",
-                          cancelButtonLabel: "取消",
-                          initialSelectedValues: _selected,
-                          limit: widget.limit,
-                        );
-                      },
+                List selectedValues = await showDialog<List>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return TreeSelectView(
+                      widget.nodes,
+                      title: Text("请选择" + widget.label,
+                          textAlign: TextAlign.center, style: TextStyle(fontSize: Style.pickerTitleFontSize)),
+                      okButtonLabel: "确定",
+                      cancelButtonLabel: "取消",
+                      initialSelectedValues: _selected,
+                      limit: widget.limit,
                     );
+                  },
+                );
 
-                    if (selectedValues != null) {
-                      setState(() {
-                        _selected = List.from(selectedValues);
-                      });
-                      field.didChange(_selected);
-                      if (widget.onConfirm != null) {
-                        widget.onConfirm(_selected);
-                      }
-                    }
-                  }));
+                if (selectedValues != null) {
+                  setState(() {
+                    _selected = List.from(selectedValues);
+                  });
+                  field.didChange(_selected);
+                  if (widget.onConfirm != null) {
+                    widget.onConfirm(_selected);
+                  }
+                }
+              },
+              child: InputDecorator(
+                decoration: InputDecoration(
+                    labelText: widget.label + (widget.required ? " *" : ''),
+                    errorText: field.errorText,
+                    labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
+                    hintText: widget.placeholder ?? "请输入" + widget.label),
+                child: Row(children: [
+                  Expanded(
+                      child: widget.loading
+                          ? Text("数据加载中...", style: TextStyle(fontSize: Style.fieldFontSize))
+                          : _selected != null && _selected.length > 0
+                              ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
+                              : Text(widget.placeholder ?? "请选择" + widget.label)),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: Colors.grey,
+                    size: 18,
+                  )
+                ]),
+              ));
         });
   }
 
@@ -155,11 +144,11 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             border: Border.all(
-              color: Colors.lightBlue,
+              color: Theme.of(context).accentColor,
               width: 1,
             ),
             borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Colors.lightBlue,
+            color: Theme.of(context).accentColor,
           ),
           child: Text(
             existingItem.text,

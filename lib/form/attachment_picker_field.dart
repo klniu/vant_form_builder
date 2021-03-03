@@ -15,16 +15,14 @@ import 'package:vant_form_builder/util/toast_util.dart';
 import 'package:intl/intl.dart';
 import 'package:http_parser/http_parser.dart';
 
-import 'custom_form_field.dart';
-
 class AttachmentPickerField extends StatefulWidget {
   final String name;
   final AttachmentType attachmentType;
   final bool onlyCamera;
   final String label;
-  final double labelWidth;
   final bool required;
   final FormFieldValidator validator;
+
   /// 允许一次选择多张照片
   final bool multiple;
   final int maxCount;
@@ -38,17 +36,16 @@ class AttachmentPickerField extends StatefulWidget {
 
   const AttachmentPickerField(this.name, this.attachmentType, this.uploadService,
       {Key key,
-        this.onlyCamera: false,
-        this.label,
-        this.labelWidth,
-        this.required = false,
-        this.validator,
-        this.multiple = false,
-        this.maxCount = 20,
-        this.defaultAttachments,
-        this.onChange,
-        this.onRemove,
-        this.disabled = false})
+      this.onlyCamera: false,
+      this.label,
+      this.required = false,
+      this.validator,
+      this.multiple = false,
+      this.maxCount = 20,
+      this.defaultAttachments,
+      this.onChange,
+      this.onRemove,
+      this.disabled = false})
       : super(key: key);
 
   @override
@@ -85,17 +82,20 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         validator: widget.validator,
         initialValue: _attachments,
         enabled: !widget.disabled,
+        decoration: InputDecoration(
+          labelText: widget.label,
+        ),
         onReset: () {
           setState(() {
             _attachments = widget.defaultAttachments == null ? [] : [...widget.defaultAttachments];
           });
         },
         builder: (FormFieldState<List<Attachment>> field) {
-          return CustomFormField(
-              label: widget.label,
-              labelWidth: widget.labelWidth,
-              required: widget.required,
-              errorText: field.errorText,
+          return InputDecorator(
+              decoration: InputDecoration(
+                  labelText: widget.label + (widget.required ? " *" : ''),
+                  errorText: field.errorText,
+                  labelStyle: widget.required ? TextStyle(color: Colors.red) : null),
               child: _buildPicker(field));
         });
   }
@@ -211,16 +211,14 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         width: 180,
         padding: EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.lightBlue,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         alignment: Alignment.center,
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          SizedBox(child: CircularProgressIndicator(backgroundColor: Colors.white, strokeWidth: 2), width: 16,
-              height: 16),
+          SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 16, height: 16),
           SizedBox(width: 10),
-          Text("正在上传，第$uploadCount个...", style: TextStyle(color: Colors.white))
+          Text("正在上传，第$uploadCount个...")
         ]));
   }
 
@@ -251,9 +249,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
   Future<void> pickFiles(FormFieldState field) async {
     FilePickerResult result;
     try {
-      if (await Permission.storage
-          .request()
-          .isGranted) {
+      if (await Permission.storage.request().isGranted) {
         result = await FilePicker.platform.pickFiles(withData: true);
       } else {
         ToastUtil.error("存储权限获取失败");
@@ -297,7 +293,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           spacing: 10,
           children: List.generate(
             _attachments.length,
-                (index) {
+            (index) {
               return Stack(
                 alignment: Alignment.topRight,
                 children: <Widget>[
