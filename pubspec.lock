@@ -99,13 +99,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
-  dio:
-    dependency: "direct main"
-    description:
-      name: dio
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.10"
   dropdown_search:
     dependency: transitive
     description:
@@ -238,6 +231,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "7.1.1"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.26.0"
   http:
     dependency: transitive
     description:

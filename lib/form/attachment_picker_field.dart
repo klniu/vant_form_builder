@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
+import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
 import 'package:image/image.dart' as img;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,6 @@ import 'package:vant_form_builder/model/attachment_type.dart';
 import 'package:vant_form_builder/model/attachment.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 import 'package:intl/intl.dart';
-import 'package:http_parser/http_parser.dart';
 
 class AttachmentPickerField extends StatefulWidget {
   final String name;
@@ -29,7 +28,7 @@ class AttachmentPickerField extends StatefulWidget {
   final Function(List<Attachment>) onChange;
   final Function(Attachment) onRemove;
   final bool disabled;
-  final Future Function(MultipartFile) uploadService;
+  final Future<Attachment> Function(MultipartFile) uploadService;
 
   /// 最大附件数量
   final List<Attachment> defaultAttachments;
@@ -139,10 +138,10 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
             } else if (image.width > 1000) {
               image = img.copyResize(image, width: 1000);
             }
-            MultipartFile multipartFile = MultipartFile.fromBytes(
+            MultipartFile multipartFile = MultipartFile(
               img.encodeJpg(image),
               filename: "DCIM_${new DateFormat("yyyyMMddHHmmss").format(DateTime.now())}.jpg",
-              contentType: MediaType.parse('image/jpeg'),
+              contentType: 'image/jpeg',
             );
             Attachment attachment = await widget.uploadService(multipartFile);
             if (attachment != null) {
@@ -168,7 +167,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
                 byteData = await file.getByteData(quality: 90);
               }
               List<int> imageData = byteData.buffer.asUint8List();
-              MultipartFile multipartFile = MultipartFile.fromBytes(imageData, filename: file.name);
+              MultipartFile multipartFile = MultipartFile(imageData, filename: file.name);
               Attachment attachment = await widget.uploadService(multipartFile);
               if (attachment != null) {
                 setState(() {
@@ -268,7 +267,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         _uploading = true;
       });
       for (var file in result.files) {
-        MultipartFile multipartFile = MultipartFile.fromBytes(file.bytes, filename: file.name);
+        MultipartFile multipartFile = MultipartFile(file.bytes, filename: file.name);
         Attachment attachment = await widget.uploadService(multipartFile);
         setState(() => _attachments.add(attachment));
         field.didChange(_attachments);
