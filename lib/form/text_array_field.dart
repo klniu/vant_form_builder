@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_vant_kit/main.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
-import 'package:quiver/strings.dart';
-
-import 'custom_form_field.dart';
 
 class TextArrayField extends StatefulWidget {
   final String name;
@@ -68,7 +63,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
   }
 
   _splitText(String text) {
-    if (isBlank(text)) return;
+    if (text == null || text.isEmpty) return;
     var texts = text.split(widget.splitString);
     if (texts.length < _controllers.length) {
       Iterable<int>.generate(_controllers.length - texts.length).forEach((_) {
@@ -92,61 +87,58 @@ class _TextArrayFieldState extends State<TextArrayField> {
         initialValue: widget.defaultText,
         onReset: () => _splitText(widget.defaultText),
         builder: (FormFieldState<dynamic> field) {
-          return CustomFormField(
-              label: widget.label,
-              labelWidth: widget.labelWidth ?? Style.fieldLabelWidth,
-              required: widget.required,
-              errorText: field.errorText,
-              child: Column(
-                  children: _controllers.asMap().entries.map((entry) {
-                return Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Expanded(
-                      child: TextField(
-                          controller: entry.value,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: Style.fieldInputPadding,
-                            hintText: widget.placeholder ?? "请输入" + widget.label,
-                            hintStyle: TextStyle(
-                              color: Style.fieldPlaceholderTextColor,
-                              fontSize: Style.fieldFontSize,
-                            ),
-                          ),
-                          style: TextStyle(fontSize: Style.fieldFontSize),
-                          keyboardType: widget.keyboardType,
-                          enabled: !widget.disabled,
-                          onChanged: (val) {
-                            var val = _controllers.map((e) => e.text).join(widget.splitString);
-                            field.didChange(val);
-                            if (widget.onChange != null) {
-                              widget.onChange(val);
-                            }
-                          })),
-                  NButton(
-                    size: "small",
-                    height: 24,
-                    color: Colors.blue,
-                    icon: Icon(entry.key == 0 ? Icons.add_circle_outline : Icons.remove_circle_outline,
-                        color: Colors.white, size: 18),
-                    onClick: () {
-                      if (entry.key == 0) {
-                        setState(() {
-                          _controllers.add(TextEditingController());
-                        });
-                      } else {
-                        setState(() {
-                          _toBeDisposed.add(_controllers.removeAt(entry.key));
-                        });
-                        var val = _controllers.map((e) => e.text).join(widget.splitString);
-                        field.didChange(val);
-                        if (widget.onChange != null) {
-                          widget.onChange(val);
-                        }
-                      }
-                    },
-                  )
-                ]);
-              }).toList()));
+          return InputDecorator(
+              decoration: InputDecoration(
+                  labelText: widget.label + (widget.required ? " *" : ''),
+                  errorText: field.errorText,
+                  labelStyle: widget.required ? TextStyle(color: Colors.red) : null),
+              child: _buildPicker(field));
         });
+  }
+
+  Widget _buildPicker(FormFieldState field) {
+    return Column(
+        children: _controllers.asMap().entries.map((entry) {
+      return Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+        Expanded(
+            child: TextField(
+                controller: entry.value,
+                decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(vertical: 5),
+                    hintText: widget.placeholder ?? "请输入" + widget.label,
+                    hintStyle: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey)),
+                keyboardType: widget.keyboardType,
+                enabled: !widget.disabled,
+                onChanged: (val) {
+                  var val = _controllers.map((e) => e.text).join(widget.splitString);
+                  field.didChange(val);
+                  if (widget.onChange != null) {
+                    widget.onChange(val);
+                  }
+                })),
+        ElevatedButton(
+          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue)),
+          child: Icon(entry.key == 0 ? Icons.add_circle_outline : Icons.remove_circle_outline,
+              color: Colors.white, size: 18),
+          onPressed: () {
+            if (entry.key == 0) {
+              setState(() {
+                _controllers.add(TextEditingController());
+              });
+            } else {
+              setState(() {
+                _toBeDisposed.add(_controllers.removeAt(entry.key));
+              });
+              var val = _controllers.map((e) => e.text).join(widget.splitString);
+              field.didChange(val);
+              if (widget.onChange != null) {
+                widget.onChange(val);
+              }
+            }
+          },
+        )
+      ]);
+    }).toList());
   }
 }

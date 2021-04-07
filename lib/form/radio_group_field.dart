@@ -1,40 +1,43 @@
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
-class DateTimeField extends StatelessWidget {
+class RadioGroupField extends StatelessWidget {
   final String name;
+  final List<FormBuilderFieldOption> items;
   final String label;
   final bool required;
   final FormFieldValidator validator;
-  final DateTime defaultTime;
-  final InputType inputType;
+  final String defaultValue;
+  final Axis direction;
   final String placeholder;
+  final bool enabled;
+  final void Function(String) onChanged;
 
-  const DateTimeField(this.name,
+  const RadioGroupField(this.name, this.items,
       {Key key,
-      this.label,
+      this.label = "",
       this.required = false,
       this.validator,
-      this.inputType: InputType.date,
+      this.defaultValue,
       this.placeholder,
-      this.defaultTime})
+      this.onChanged,
+        this.enabled,
+      this.direction = Axis.vertical})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilderDateTimePicker(
+    return FormBuilderRadioGroup(
         name: this.name,
-        // onChanged: _onChanged,
-        format: DateFormat('yyyy-MM-dd HH:mm:ss'),
-        inputType: this.inputType,
+        initialValue: this.defaultValue,
+        validator: this.validator,
+        enabled: this.enabled,
         decoration: InputDecoration(
+          border: InputBorder.none,
           labelText: this.label + (this.required ? " *" : ''),
           labelStyle: this.required ? TextStyle(color: Colors.red) : null,
           hintText: this.placeholder ?? "请输入" + this.label,
         ),
-        style: Theme.of(context).textTheme.bodyText2,
-        initialValue: this.defaultTime,
-        validator: this.validator);
+        options: items);
   }
 }

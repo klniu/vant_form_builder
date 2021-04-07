@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'tree_node.g.dart';
-
-@JsonSerializable()
 class TreeNode<T> {
   String id;
   String parentId;
@@ -17,11 +12,26 @@ class TreeNode<T> {
 
   bool get hasChildren => children != null && children.length > 0;
 
-  TreeNode(this.title, this.value, this.id,
-      {this.parentId, this.children, this.key, this.depth}) {
+  TreeNode(this.title, this.value, this.id, {this.parentId, this.children, this.key, this.depth}) {
     this.expand = false;
   }
 
-  factory TreeNode.fromJson(Map<String, dynamic> json) => _$TreeNodeFromJson(json);
-  Map<String, dynamic> toJson() => _$TreeNodeToJson(this);
+  factory TreeNode.fromJson(Map<String, dynamic> json) =>
+      TreeNode(json['title'] as String, json['value'] as T, json['id'] as String,
+          parentId: json['parentId'] as String,
+          children: (json['children'] as List)
+              ?.map((e) => e == null ? null : TreeNode.fromJson(e as Map<String, dynamic>))
+              ?.toList(),
+          key: json['key'] as String,
+          depth: json['depth'] as int);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'id': this.id,
+        'parentId': this.parentId,
+        'children': this.children?.map((e) => e?.toJson())?.toList(),
+        'title': this.title,
+        'key': this.key,
+        'value': this.value,
+        'depth': this.depth
+      };
 }

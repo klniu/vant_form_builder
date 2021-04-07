@@ -7,12 +7,12 @@ import 'package:image/image.dart' as img;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_vant_kit/widgets/imageWall.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vant_form_builder/model/attachment_type.dart';
 import 'package:vant_form_builder/model/attachment.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 import 'package:intl/intl.dart';
+import 'package:vant_form_builder/widget/imageWall.dart';
 
 class AttachmentPickerField extends StatefulWidget {
   final String name;
@@ -81,9 +81,6 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         validator: widget.validator,
         initialValue: _attachments,
         enabled: !widget.disabled,
-        decoration: InputDecoration(
-          labelText: widget.label,
-        ),
         onReset: () {
           setState(() {
             _attachments = widget.defaultAttachments == null ? [] : [...widget.defaultAttachments];
@@ -92,9 +89,11 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         builder: (FormFieldState<List<Attachment>> field) {
           return InputDecorator(
               decoration: InputDecoration(
-                  labelText: widget.label + (widget.required ? " *" : ''),
-                  errorText: field.errorText,
-                  labelStyle: widget.required ? TextStyle(color: Colors.red) : null),
+                labelText: widget.label + (widget.required ? " *" : ''),
+                errorText: field.errorText,
+                labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
+                contentPadding: EdgeInsets.symmetric(vertical: 10),
+              ),
               child: _buildPicker(field));
         });
   }
@@ -217,7 +216,10 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 16, height: 16),
           SizedBox(width: 10),
-          Text("正在上传，第$uploadCount个...")
+          Container(
+              color: Theme.of(context).primaryColor,
+              child: Text("正在上传，第$uploadCount个...",
+                  style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white))),
         ]));
   }
 

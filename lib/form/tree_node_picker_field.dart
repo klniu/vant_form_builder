@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
-import 'package:flutter_vant_kit/widgets/picker.dart';
-import 'package:quiver/strings.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/data_converter.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
+import 'package:vant_form_builder/widget/picker.dart';
 
 class TreeNodePickerField extends StatefulWidget {
   final String name;
@@ -21,15 +19,15 @@ class TreeNodePickerField extends StatefulWidget {
 
   TreeNodePickerField(this.name,
       {Key key,
-        this.nodes = const [],
-        this.label,
-        this.required = false,
-        this.validator,
-        this.defaultValue,
-        this.placeholder,
-        this.loading = false,
-        this.disabled = false,
-        this.onConfirm})
+      this.nodes = const [],
+      this.label,
+      this.required = false,
+      this.validator,
+      this.defaultValue,
+      this.placeholder,
+      this.loading = false,
+      this.disabled = false,
+      this.onConfirm})
       : super(key: key);
 
   @override
@@ -72,90 +70,83 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
         },
         builder: (FormFieldState<dynamic> field) {
           return GestureDetector(
-              onTap: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                if (widget.disabled) {
-                  return;
-                }
-                if (widget.nodes == null || widget.nodes.length == 0) {
-                  ToastUtil.info("无数据");
-                  return;
-                }
-                List<PickerItem> items = DataConverter.treeNode2PickerItem(widget.nodes);
-                showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      // 对于1级的，defaultIndex不能是数组
-                      int level = DataConverter.getPickerItemDeep(items);
-                      var defaultIndex;
-                      if (index != null) {
-                        if (level == 1 && index.length > 0) {
-                          defaultIndex = index[0];
-                        } else {
-                          defaultIndex = List.generate(level, (i) {
-                            if (index.length > i) {
-                              return index[i];
-                            } else {
-                              return 0;
-                            }
-                          });
-                        }
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+              if (widget.disabled) {
+                return;
+              }
+              if (widget.nodes == null || widget.nodes.length == 0) {
+                ToastUtil.info("无数据");
+                return;
+              }
+              List<PickerItem> items = DataConverter.treeNode2PickerItem(widget.nodes);
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    // 对于1级的，defaultIndex不能是数组
+                    int level = DataConverter.getPickerItemDeep(items);
+                    var defaultIndex;
+                    if (index != null) {
+                      if (level == 1 && index.length > 0) {
+                        defaultIndex = index[0];
+                      } else {
+                        defaultIndex = List.generate(level, (i) {
+                          if (index.length > i) {
+                            return index[i];
+                          } else {
+                            return 0;
+                          }
+                        });
                       }
-                      return Picker(
-                          colums: items,
-                          level: level,
-                          defaultIndex: defaultIndex,
-                          showToolbar: true,
-                          itemHeight: 36,
-                          title: "请选择" + widget.label,
-                          onCancel: (values, index) {
-                            Navigator.pop(context);
-                          },
-                          onConfirm: (List<String> values, indies) {
-                            setState(() {
-                              if (indies is int) {
-                                index = [indies];
-                              } else {
-                                index = indies;
-                              }
-                              // picker在多维度如果不整齐的话，缺少的会补位"-"
-                              var tailIndex = values.indexOf("-");
-                              if (tailIndex == -1) {
-                                selectedText = values.join("/");
-                                value = getTreeNode(index).value;
-                              } else {
-                                selectedText = values.sublist(0, tailIndex).join("/");
-                                value = getTreeNode(index.sublist(0, tailIndex)).value;
-                              }
-                            });
-                            field.didChange(value);
-                            if (widget.onConfirm != null) {
-                              widget.onConfirm(selectedText, value);
+                    }
+                    return Picker(
+                        colums: items,
+                        level: level,
+                        defaultIndex: defaultIndex,
+                        showToolbar: true,
+                        itemHeight: 36,
+                        title: "请选择" + widget.label,
+                        onCancel: (values, index) {
+                          Navigator.pop(context);
+                        },
+                        onConfirm: (List<String> values, indies) {
+                          setState(() {
+                            if (indies is int) {
+                              index = [indies];
+                            } else {
+                              index = indies;
                             }
-                            Navigator.pop(context);
+                            // picker在多维度如果不整齐的话，缺少的会补位"-"
+                            var tailIndex = values.indexOf("-");
+                            if (tailIndex == -1) {
+                              selectedText = values.join("/");
+                              value = getTreeNode(index).value;
+                            } else {
+                              selectedText = values.sublist(0, tailIndex).join("/");
+                              value = getTreeNode(index.sublist(0, tailIndex)).value;
+                            }
                           });
-                    });
-              },
-              child: InputDecorator(
+                          field.didChange(value);
+                          if (widget.onConfirm != null) {
+                            widget.onConfirm(selectedText, value);
+                          }
+                          Navigator.pop(context);
+                        });
+                  });
+            },
+            child: InputDecorator(
                 decoration: InputDecoration(
                     labelText: widget.label + (widget.required ? " *" : ''),
                     errorText: field.errorText,
                     labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
-                    hintText: widget.placeholder ?? "请输入" + widget.label
-                ),
-                child: Row(children: [
-                  Expanded(
-                      child: widget.loading
-                          ? Text("数据加载中...", style: TextStyle(fontSize: Style.fieldFontSize))
-                          : isNotEmpty(selectedText)
-                          ? Text(selectedText)
-                          : Text(widget.placeholder ?? "请选择" + widget.label)),
-                  Icon(
-                    Icons.arrow_forward,
-                    size: 18,
-                  )
-                ]),
-              ));
+                    hintText: widget.placeholder ?? "请输入" + widget.label),
+                child: widget.loading
+                    ? Text("数据加载中...", style: Theme.of(context).textTheme.bodyText2)
+                    : selectedText != null && selectedText.isNotEmpty
+                        ? Text(selectedText, style: Theme.of(context).textTheme.bodyText2)
+                        : Text(widget.placeholder ?? "请选择" + widget.label,
+                            style: Theme.of(context).inputDecorationTheme.hintStyle)),
+          );
         });
   }
 
@@ -169,7 +160,7 @@ class _TreeNodePickerFieldState extends State<TreeNodePickerField> {
 
   /// 在外部通过form_builder更改时调用
   _onChangeValueOutside(String val) {
-    if (isNotBlank(val)) {
+    if (val != null && val.isNotEmpty) {
       var node = DataConverter.getIndexInTreeNodesByValue(val, widget.nodes);
       if (node != null) {
         setState(() {

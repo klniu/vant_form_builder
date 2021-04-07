@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 
-import 'custom_form_field.dart';
 import 'multiselect_dialog.dart';
 
 class MultipleSelectField extends StatefulWidget {
@@ -16,6 +14,7 @@ class MultipleSelectField extends StatefulWidget {
   final bool required;
   final FormFieldValidator validator;
   final List<String> defaultValue;
+  final String placeholder;
   final TextStyle chipLabelStyle;
   final Color chipBackGroundColor;
   final bool loading;
@@ -30,12 +29,12 @@ class MultipleSelectField extends StatefulWidget {
       this.required = false,
       this.validator,
       this.defaultValue,
+      this.placeholder,
       this.chipLabelStyle,
       this.chipBackGroundColor,
       this.loading = false,
       this.onConfirm,
-      this.limit = 1000
-      })
+      this.limit = 1000})
       : super(key: key);
 
   @override
@@ -47,8 +46,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
 
   _MultipleSelectFieldState();
 
-  static FormBuilderState of(BuildContext context) =>
-      context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
@@ -75,67 +73,53 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
           });
         },
         builder: (FormFieldState<dynamic> field) {
-          return CustomFormField(
-              label: widget.label,
-              labelWidth: widget.labelWidth,
-              required: widget.required,
-              errorText: field.errorText,
-              child: GestureDetector(
-                  child: Row(children: [
-                    Expanded(
-                        child: widget.loading
-                            ? Text("数据加载中...",
-                                style: TextStyle(
-                                    color: Style.fieldInputTextColor,
-                                    fontSize: Style.fieldFontSize))
-                            : _selected != null && _selected.length > 0
-                                ? Wrap(
-                                    spacing: 8.0,
-                                    runSpacing: 0.0,
-                                    children: _buildSelectedOptions())
-                                : Text("请选择" + widget.label,
-                                    style: TextStyle(
-                                        color: Style.fieldPlaceholderTextColor,
-                                        fontSize: Style.fieldFontSize))),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: Colors.grey,
-                      size: 18,
-                    )
-                  ]),
-                  onTap: () async {
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                    if (widget.nodes == null || widget.nodes.length == 0) {
-                      ToastUtil.info("无数据");
-                      return;
-                    }
-                    List selectedValues = await showDialog<List>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return MultiSelectDialog(
-                          title: Text("请选择" + widget.label,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: Style.pickerTitleFontSize)),
-                          okButtonLabel: "确定",
-                          cancelButtonLabel: "取消",
-                          items: widget.nodes,
-                          initialSelectedValues: _selected,
-                          limit: widget.limit,
-                        );
-                      },
+          return GestureDetector(
+              child: InputDecorator(
+                  decoration: InputDecoration(
+                      labelText: widget.label + (widget.required ? " *" : ''),
+                      errorText: field.errorText,
+                      labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
+                      hintText: widget.placeholder ?? "请输入" + widget.label),
+                  child: widget.loading
+                      ? Text("数据加载中...")
+                      : _selected != null && _selected.length > 0
+                          ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
+                          : Text("请选择" + widget.label,
+                              style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey))),
+              onTap: () async {
+                FocusScope.of(context).requestFocus(new FocusNode());
+                if (widget.nodes == null || widget.nodes.length == 0) {
+                  ToastUtil.info("无数据");
+                  return;
+                }
+                List selectedValues = await showDialog<List>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return MultiSelectDialog(
+                      title: Text(
+                        "请选择" + widget.label,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                      okButtonLabel: "确定",
+                      cancelButtonLabel: "取消",
+                      items: widget.nodes,
+                      initialSelectedValues: _selected,
+                      limit: widget.limit,
                     );
+                  },
+                );
 
-                    if (selectedValues != null) {
-                      setState(() {
-                        _selected = List.from(selectedValues);
-                      });
-                      field.didChange(_selected);
-                      if (widget.onConfirm != null) {
-                        widget.onConfirm(_selected);
-                      }
-                    }
-                  }));
+                if (selectedValues != null) {
+                  setState(() {
+                    _selected = List.from(selectedValues);
+                  });
+                  field.didChange(_selected);
+                  if (widget.onConfirm != null) {
+                    widget.onConfirm(_selected);
+                  }
+                }
+              });
         });
   }
 
@@ -144,8 +128,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
 
     if (_selected != null) {
       for (var item in _selected) {
-        var existingItem = widget.nodes
-            .singleWhere((itm) => itm.value == item, orElse: () => null);
+        var existingItem = widget.nodes.singleWhere((itm) => itm.value == item, orElse: () => null);
         if (existingItem == null) {
           continue;
         }
@@ -164,7 +147,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
           ),
           child: Text(
             existingItem.title,
-            style: TextStyle(fontSize: Style.fieldFontSize, color: Colors.white),
+            style: TextStyle(color: Colors.white),
             overflow: TextOverflow.ellipsis,
           ),
         ));

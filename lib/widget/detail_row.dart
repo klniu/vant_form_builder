@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
+import 'package:get/get.dart';
 
 /// 详情行，child与text二选一
 class DetailRow extends StatelessWidget {
@@ -26,31 +26,21 @@ class DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: padding ?? EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        padding: padding ?? EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         child: Row(children: [
           Container(
-              width: labelWidth ?? Style.fieldLabelWidth,
-              height: Style.fieldMinHeight,
+              width: labelWidth ?? 80.0,
+              height: 30.0,
               child: Row(children: [
-                if (required)
-                  Text("*",
-                      style: TextStyle(
-                        fontSize: Style.fieldFontSize,
-                        color: Style.fieldRequiredColor,
-                      )),
+                if (required) Text("*", style: Get.textTheme.bodyText2.copyWith(color: Colors.red)),
                 Flexible(
                     child: Text(label,
-                        textAlign: TextAlign.start,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: Style.fieldFontSize))),
+                        textAlign: TextAlign.start, overflow: TextOverflow.ellipsis)),
               ])),
           Expanded(
               child: child ??
                   Text(text ?? "",
-                      style: TextStyle(
-                          fontSize: Style.fieldFontSize,
-                          color: this.textColor ?? Colors.black,
-                          fontWeight: textFontWeight ?? FontWeight.normal)))
+                      style: Get.textTheme.bodyText2.copyWith(color: this.textColor, fontWeight: textFontWeight)))
         ]));
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 
@@ -22,7 +21,7 @@ class MultiSelectDialog extends StatefulWidget {
     this.title,
     this.okButtonLabel,
     this.cancelButtonLabel,
-    this.labelStyle = const TextStyle(fontSize: Style.pickerOptionFontSize),
+    this.labelStyle,
     this.dialogShapeBorder,
     this.checkBoxActiveColor,
     this.checkBoxCheckColor,
@@ -112,7 +111,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
       activeColor: widget.checkBoxActiveColor,
       title: Text(
         item.title,
-        style: widget.labelStyle,
+        style: widget.labelStyle ?? Theme.of(context).textTheme.bodyText2,
       ),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) => _onItemCheckedChange(item.value, checked),

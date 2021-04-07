@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:vant_form_builder/form/tree_select_view.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/data_converter.dart';
@@ -86,7 +85,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                     return TreeSelectView(
                       widget.nodes,
                       title: Text("请选择" + widget.label,
-                          textAlign: TextAlign.center, style: TextStyle(fontSize: Style.pickerTitleFontSize)),
+                          textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle1),
                       okButtonLabel: "确定",
                       cancelButtonLabel: "取消",
                       initialSelectedValues: _selected,
@@ -106,25 +105,18 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                 }
               },
               child: InputDecorator(
-                decoration: InputDecoration(
+                  decoration: InputDecoration(
                     labelText: widget.label + (widget.required ? " *" : ''),
                     errorText: field.errorText,
                     labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
-                    hintText: widget.placeholder ?? "请输入" + widget.label),
-                child: Row(children: [
-                  Expanded(
-                      child: widget.loading
-                          ? Text("数据加载中...", style: TextStyle(fontSize: Style.fieldFontSize))
-                          : _selected != null && _selected.length > 0
-                              ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
-                              : Text(widget.placeholder ?? "请选择" + widget.label)),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: Colors.grey,
-                    size: 18,
-                  )
-                ]),
-              ));
+                    hintText: widget.placeholder ?? "请输入" + widget.label,
+                  ),
+                  child: widget.loading
+                      ? Text("数据加载中...")
+                      : _selected != null && _selected.length > 0
+                          ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
+                          : Text(widget.placeholder ?? "请选择" + widget.label,
+                              style: Theme.of(context).inputDecorationTheme.hintStyle)));
         });
   }
 
@@ -139,7 +131,6 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
         }
         selectedOptions.add(Container(
           padding: EdgeInsets.all(3.0),
-          height: 26,
           margin: EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
@@ -152,7 +143,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
           ),
           child: Text(
             existingItem.text,
-            style: TextStyle(fontSize: Style.fieldFontSize, color: Colors.white),
+            style: TextStyle(color: Colors.white, fontSize: Theme.of(context).textTheme.bodyText2.fontSize),
             overflow: TextOverflow.ellipsis,
           ),
         ));

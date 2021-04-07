@@ -3,11 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
-import 'package:flutter_vant_kit/widgets/dialog.dart';
-import 'package:quiver/strings.dart';
-
-import 'custom_form_field.dart';
+import 'package:get/get.dart';
+import 'package:signature/signature.dart';
+import 'package:vant_form_builder/theme/button_styles.dart';
 
 class SignatureField extends StatefulWidget {
   final String name;
@@ -74,56 +72,69 @@ class _SignatureFieldState extends State<SignatureField> {
         onReset: () => _controller.clear(),
         enabled: !widget.disabled,
         builder: (FormFieldState<dynamic> field) {
-          return CustomFormField(
-              label: widget.label,
-              labelWidth: widget.labelWidth ?? Style.fieldLabelWidth,
-              required: widget.required,
-              errorText: field.errorText,
-              child: GestureDetector(
-                  child: _imageUri == null
-                      ? Text("点击添加签名",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(fontSize: Style.fieldFontSize, color: Style.fieldPlaceholderTextColor))
-                      : _imageWidget(),
-                  onTap: () {
-                    if (widget.disabled) {
-                      return;
-                    }
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                    _controller.clear();
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return NDialog(
-                          title: "手写签名",
-                          child: Container(
-                            height: 300,
-                            child: Signature(
-                              controller: _controller,
-                              width: 300,
-                              height: 200,
-                              backgroundColor: Colors.grey,
-                            ),
-                          ),
-                          showCancelButton: true,
-                          beforeClose: () async {
-                            if (_controller.isNotEmpty) {
-                              var data = await _controller.toPngBytes();
-                              setState(() {
-                                _imageUri = _dataUriPrefix + base64.encode(data);
-                              });
-                              field.didChange(_imageUri);
-                              if (widget.onConfirm != null) {
-                                await widget.onConfirm(_imageUri);
-                              }
-                            }
-                            return true;
-                          },
-                        );
-                      },
-                    );
-                  }));
+          return InputDecorator(
+              decoration: InputDecoration(
+                  labelText: widget.label + (widget.required ? " *" : ''),
+                  errorText: field.errorText,
+                  labelStyle: widget.required ? TextStyle(color: Colors.red) : null),
+              child: _buildPicker(field));
         });
+  }
+
+  Widget _buildPicker(FormFieldState field) {
+    return GestureDetector(
+      child: _imageUri == null
+          ? Text("点击添加签名",
+              textAlign: TextAlign.start, style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey))
+          : _imageWidget(),
+      onTap: () {
+        if (widget.disabled) {
+          return;
+        }
+        FocusScope.of(context).requestFocus(new FocusNode());
+        _controller.clear();
+        Get.dialog(
+            Center(
+                child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 15.0),
+                    decoration: new BoxDecoration(
+                        color: Get.theme.scaffoldBackgroundColor,
+                        borderRadius: new BorderRadius.all(const Radius.circular(8.0))),
+                    constraints: BoxConstraints(maxHeight: 320),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                      Text("手写签名", style: Get.textTheme.subtitle1),
+                      SizedBox(height: 10),
+                      Column(children: [
+                        Signature(
+                          controller: _controller,
+                          height: 200,
+                        ),
+                        SizedBox(height: 10),
+                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          ElevatedButton(
+                              style: ButtonStyles.primary(),
+                              child: Text("确定"),
+                              onPressed: () async {
+                                if (_controller.isNotEmpty) {
+                                  var data = await _controller.toPngBytes();
+                                  setState(() {
+                                    _imageUri = _dataUriPrefix + base64.encode(data);
+                                  });
+                                  field.didChange(_imageUri);
+                                  if (widget.onConfirm != null) {
+                                    await widget.onConfirm(_imageUri);
+                                  }
+                                  Get.back();
+                                }
+                              }),
+                          SizedBox(width: 40),
+                          ElevatedButton(onPressed: Get.back, style: ButtonStyles.info(), child: Text("取消"))
+                        ])
+                      ])
+                    ]))),
+            barrierDismissible: false);
+      },
+    );
   }
 
   Widget _imageWidget() {
@@ -137,11 +148,11 @@ class _SignatureFieldState extends State<SignatureField> {
   }
 
   Uint8List _base64ImageToByte(String dataUri) {
-    if (isBlank(dataUri) || !dataUri.startsWith("data:image")) return null;
+    if (GetUtils.isNullOrBlank(dataUri) || !dataUri.startsWith("data:image")) return null;
     var index = dataUri.indexOf(",");
     if (index == -1) {
       return null;
     }
-    return base64.decode(dataUri.substring(index+1));
+    return base64.decode(dataUri.substring(index + 1));
   }
 }

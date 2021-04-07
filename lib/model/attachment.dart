@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'attachment.g.dart';
-
-@JsonSerializable()
 class Attachment {
   String id;
   String tenantId;
@@ -27,7 +22,30 @@ class Attachment {
       this.url,
       this.usageName});
 
-  factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
+  factory Attachment.fromJson(Map<String, dynamic> json) => Attachment(
+  id: json['id'] as String,
+      tenantId: json['tenantId'] as String,
+      businessId: json['businessId'] as String,
+      originalName: json['originalName'] as String,
+      name: json['name'] as String,
+      fileType: json['fileType'] as String,
+      fileUsage: json['fileUsage'] as String,
+      sort: json['sort'] as int,
+      url: json['url'] as String,
+      usageName: json['usageName'] as String,
+  );
 
-  Map<String, dynamic> toJson() => _$AttachmentToJson(this);
+  Map<String, dynamic> toJson() =>
+      <String, dynamic>{
+        'id': this.id,
+        'tenantId': this.tenantId,
+        'businessId': this.businessId,
+        'originalName': this.originalName,
+        'name': this.name,
+        'fileType': this.fileType,
+        'fileUsage': this.fileUsage,
+        'sort': this.sort,
+        'url': this.url,
+        'usageName': this.usageName,
+      };
 }

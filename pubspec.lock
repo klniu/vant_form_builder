@@ -15,13 +15,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.6.0"
-  asn1lib:
-    dependency: transitive
-    description:
-      name: asn1lib
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.6.5"
   async:
     dependency: transitive
     description:
@@ -35,7 +28,7 @@ packages:
       name: basic_utils
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.6.3"
+    version: "2.7.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -91,7 +84,7 @@ packages:
       name: date_range_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.6"
+    version: "1.0.7"
   datetime_picker_formfield:
     dependency: transitive
     description:
@@ -105,7 +98,7 @@ packages:
       name: dropdown_search
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.8"
+    version: "0.4.9"
   fake_async:
     dependency: transitive
     description:
@@ -119,7 +112,7 @@ packages:
       name: file_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.1.6"
+    version: "2.1.7"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -138,14 +131,14 @@ packages:
       name: flutter_colorpicker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.5"
   flutter_datetime_picker:
     dependency: transitive
     description:
       name: flutter_datetime_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.4.0"
+    version: "1.5.0"
   flutter_form_builder:
     dependency: "direct main"
     description:
@@ -159,7 +152,7 @@ packages:
       name: flutter_keyboard_visibility
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.0.3"
+    version: "4.0.6"
   flutter_keyboard_visibility_platform_interface:
     dependency: transitive
     description:
@@ -212,13 +205,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.9.3"
-  flutter_vant_kit:
-    dependency: "direct main"
-    description:
-      path: "../flutter_vant_kit"
-      relative: true
-    source: path
-    version: "0.2.5"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -230,7 +216,7 @@ packages:
       name: fluttertoast
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.1.1"
+    version: "7.1.8"
   get:
     dependency: "direct main"
     description:
@@ -253,14 +239,14 @@ packages:
     source: hosted
     version: "3.1.4"
   image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.1.18"
+    version: "2.1.19"
   image_picker:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image_picker
       url: "https://pub.flutter-io.cn"
@@ -286,7 +272,14 @@ packages:
       name: json_annotation
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.1"
+  liquid_swipe:
+    dependency: "direct main"
+    description:
+      name: liquid_swipe
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.5.0"
   logging:
     dependency: transitive
     description:
@@ -309,12 +302,19 @@ packages:
     source: hosted
     version: "1.3.0-nullsafety.3"
   multi_image_picker:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: multi_image_picker
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.7.14"
+    version: "4.7.15"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.4"
   path:
     dependency: transitive
     description:
@@ -363,14 +363,21 @@ packages:
       name: pointycastle
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.2"
+    version: "2.0.1"
+  provider:
+    dependency: transitive
+    description:
+      name: provider
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.3.3"
   quiver:
     dependency: "direct main"
     description:
       name: quiver
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.1.3"
+    version: "2.1.5"
   random_string:
     dependency: transitive
     description:
@@ -386,12 +393,12 @@ packages:
     source: hosted
     version: "0.2.0"
   signature:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: signature
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.2.0"
+    version: "3.2.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -466,7 +473,7 @@ packages:
       name: vin_decoder
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.2"
+    version: "0.1.3"
   xml:
     dependency: transitive
     description:

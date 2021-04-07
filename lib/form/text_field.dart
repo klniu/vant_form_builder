@@ -17,13 +17,14 @@ class CustomTextField extends StatefulWidget {
   final bool disabled;
   final bool obscureText;
   final TextAlign inputAlign;
+  final Widget prefixIcon;
 
   const CustomTextField(this.name,
       {Key key,
         this.label,
         this.required = false,
         this.validator,
-        this.rows,
+        this.rows = 1,
         this.maxLength,
         this.placeholder,
         this.keyboardType,
@@ -32,7 +33,9 @@ class CustomTextField extends StatefulWidget {
         this.onChange,
         this.disabled = false,
         this.obscureText = false,
-        this.inputAlign = TextAlign.start})
+        this.inputAlign = TextAlign.start,
+        this.prefixIcon
+      })
       : super(key: key);
 
   @override
@@ -40,6 +43,8 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  bool _isHidden = true;
+
   @override
   Widget build(BuildContext context) {
     return FormBuilderTextField(
@@ -47,7 +52,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
       decoration: InputDecoration(
           labelText: widget.label + (widget.required ? " *" : ''),
           labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
-          hintText: widget.placeholder ?? "请输入" + widget.label),
+          hintText: widget.placeholder ?? "请输入" + widget.label,
+          suffix: widget.obscureText ? InkWell(
+            onTap: () {
+              setState(() {
+                _isHidden = !_isHidden;
+              });
+            },
+            child: Icon(Icons.visibility),
+          ) : null,
+          prefixIcon: widget.prefixIcon
+      ),
       keyboardType: widget.keyboardType,
       maxLength: widget.maxLength,
       maxLines: widget.rows,
@@ -56,7 +71,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       enabled: !widget.disabled,
       initialValue: widget.defaultValue,
       inputFormatters: widget.inputFormatters,
-      obscureText: widget.obscureText,
+      obscureText: widget.obscureText && _isHidden,
     );
   }
 }

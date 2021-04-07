@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_vant_kit/theme/style.dart';
 import 'package:vant_form_builder/form/multiselect_dialog.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
@@ -16,19 +15,19 @@ class TreeSelectView extends StatefulWidget {
   final Color checkBoxActiveColor;
   final int limit;
 
-  const TreeSelectView(this.nodes,
-      {Key key,
-        this.initialSelectedValues,
-        this.title,
-        this.okButtonLabel,
-        this.cancelButtonLabel,
-        this.labelStyle = const TextStyle(fontSize: Style.pickerOptionFontSize),
-        this.dialogShapeBorder,
-        this.checkBoxActiveColor,
-        this.checkBoxCheckColor,
-        this.limit = 1000,
-      })
-      : super(key: key);
+  const TreeSelectView(
+    this.nodes, {
+    Key key,
+    this.initialSelectedValues,
+    this.title,
+    this.okButtonLabel,
+    this.cancelButtonLabel,
+    this.labelStyle,
+    this.dialogShapeBorder,
+    this.checkBoxActiveColor,
+    this.checkBoxCheckColor,
+    this.limit = 1000,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -36,8 +35,7 @@ class TreeSelectView extends StatefulWidget {
   }
 }
 
-class TreeSelectViewState extends State<TreeSelectView>
-    with AutomaticKeepAliveClientMixin {
+class TreeSelectViewState extends State<TreeSelectView> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -77,13 +75,13 @@ class TreeSelectViewState extends State<TreeSelectView>
         SearchBar(widget.nodes, _onSearch),
         Expanded(
             child: SingleChildScrollView(
-              child: ListTileTheme(
-                contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
-                child: ListBody(
-                  children: expand.map(_buildNode).toList(),
-                ),
-              ),
-            )),
+          child: ListTileTheme(
+            contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
+            child: ListBody(
+              children: expand.map(_buildNode).toList(),
+            ),
+          ),
+        )),
       ]),
       actions: <Widget>[
         FlatButton(
@@ -151,7 +149,7 @@ class TreeSelectViewState extends State<TreeSelectView>
   }
 
   void _expandDefault() {
-    var idToList =  Map.fromIterable(list, key: (e) => e.id);
+    var idToList = Map.fromIterable(list, key: (e) => e.id);
     // 在已经需要展开的项中找逐级找父项，并标记为展开
     for (var node in list) {
       if (node.expand) {
@@ -174,121 +172,112 @@ class TreeSelectViewState extends State<TreeSelectView>
     }
   }
 
-    ///扩展机构树：id代表被点击的机构id
-    /// 做法是遍历整个list列表，将直接挂在该机构下面的节点增加到一个临时列表中，
-    ///然后将临时列表插入到被点击的机构下面
-    void _expand(TreeNode node) {
-      if (!node.hasChildren) {
-        return;
-      }
-      //找到插入点
-      int index = -1;
-      int length = expand.length;
-      for (int i = 0; i < length; i++) {
-        if (node.id == expand[i].id) {
-          index = i + 1;
-          break;
-        }
-      }
-      //插入
-      expand.insertAll(index, node.children);
+  ///扩展机构树：id代表被点击的机构id
+  /// 做法是遍历整个list列表，将直接挂在该机构下面的节点增加到一个临时列表中，
+  ///然后将临时列表插入到被点击的机构下面
+  void _expand(TreeNode node) {
+    if (!node.hasChildren) {
+      return;
     }
-
-    ///收起机构树：id代表被点击的机构id
-    /// 做法是遍历整个expand列表，将直接和间接挂在该机构下面的节点标记，
-    ///将这些被标记节点删除即可，此处用到的是将没有被标记的节点加入到新的列表中
-    void _collect(String id) {
-      //清楚之前的标记
-      mark.clear();
-      //标记
-      _mark(id);
-      //重新对expand赋值
-      List<TreeNode> tmp = new List();
-      for (TreeNode node in expand) {
-        if (mark.indexOf(node.id) < 0) {
-          tmp.add(node);
-        } else {
-          node.expand = false;
-        }
-      }
-      expand.clear();
-      expand.addAll(tmp);
-    }
-
-    ///标记，在收起机构树的时候用到
-    void _mark(String id) {
-      for (var node in expand) {
-        if (id == node.parentId) {
-          mark.add(node.id);
-        }
+    //找到插入点
+    int index = -1;
+    int length = expand.length;
+    for (int i = 0; i < length; i++) {
+      if (node.id == expand[i].id) {
+        index = i + 1;
+        break;
       }
     }
+    //插入
+    expand.insertAll(index, node.children);
+  }
 
-    ///增加根
-    void _addRoot() {
-      for (var node in list) {
-        if (node.parentId == null) {
-          expand.add(node);
-        }
+  ///收起机构树：id代表被点击的机构id
+  /// 做法是遍历整个expand列表，将直接和间接挂在该机构下面的节点标记，
+  ///将这些被标记节点删除即可，此处用到的是将没有被标记的节点加入到新的列表中
+  void _collect(String id) {
+    //清楚之前的标记
+    mark.clear();
+    //标记
+    _mark(id);
+    //重新对expand赋值
+    List<TreeNode> tmp = new List();
+    for (TreeNode node in expand) {
+      if (mark.indexOf(node.id) < 0) {
+        tmp.add(node);
+      } else {
+        node.expand = false;
       }
     }
+    expand.clear();
+    expand.addAll(tmp);
+  }
 
-    ///构建元素
-    Widget _buildNode(TreeNode node) {
-      final checked = _selectedValues.contains(node.value);
-      return GestureDetector(
-          child: Row(children: [
-            SizedBox(
-                height: 32.0,
-                width: 32.0,
-                child: Checkbox(
-                  value: checked,
-                  checkColor: widget.checkBoxCheckColor,
-                  activeColor: widget.checkBoxActiveColor,
-                  onChanged: (checked) =>
-                      _onItemCheckedChange(node.value, checked),
-                )),
-            SizedBox(width: showSearch ? 0 : node.depth * 10.0),
-            if (node.hasChildren)
-              Icon(
-                  node.expand
-                      ? Icons.arrow_drop_down_rounded
-                      : Icons.arrow_right_rounded,
-                  size: 24)
-            else
-              SizedBox(width: 24),
-            SizedBox(width: 8),
-            Expanded(
-                child: Text(node.title,
-                    style: TextStyle(
-                        fontSize: Style.pickerOptionFontSize,
-                        color: Style.pickerOptionTextColor))),
-          ]),
-          onTap: () {
-            if (node.expand) {
-              //之前是扩展状态，收起列表
-              node.expand = false;
-              _collect(node.id);
-            } else {
-              //之前是收起状态，扩展列表
-              node.expand = true;
-              _expand(node);
-            }
-            setState(() {});
-          });
-    }
-
-    void _onItemCheckedChange(dynamic itemValue, bool checked) {
-      setState(() {
-        if (checked) {
-          if (_selectedValues.length >= widget.limit) {
-            ToastUtil.error("最多只能选择${widget.limit}项");
-          } else {
-            _selectedValues.add(itemValue);
-          }
-        } else {
-          _selectedValues.remove(itemValue);
-        }
-      });
+  ///标记，在收起机构树的时候用到
+  void _mark(String id) {
+    for (var node in expand) {
+      if (id == node.parentId) {
+        mark.add(node.id);
+      }
     }
   }
+
+  ///增加根
+  void _addRoot() {
+    for (var node in list) {
+      if (node.parentId == null) {
+        expand.add(node);
+      }
+    }
+  }
+
+  ///构建元素
+  Widget _buildNode(TreeNode node) {
+    final checked = _selectedValues.contains(node.value);
+    return GestureDetector(
+        child: Row(children: [
+          SizedBox(
+              height: 32.0,
+              width: 32.0,
+              child: Checkbox(
+                value: checked,
+                checkColor: widget.checkBoxCheckColor,
+                activeColor: widget.checkBoxActiveColor,
+                onChanged: (checked) => _onItemCheckedChange(node.value, checked),
+              )),
+          SizedBox(width: showSearch ? 0 : node.depth * 10.0),
+          if (node.hasChildren)
+            Icon(node.expand ? Icons.arrow_drop_down_rounded : Icons.arrow_right_rounded, size: 24)
+          else
+            SizedBox(width: 24),
+          SizedBox(width: 8),
+          Expanded(child: Text(node.title, style: widget.labelStyle ?? Theme.of(context).textTheme.bodyText2)),
+        ]),
+        onTap: () {
+          if (node.expand) {
+            //之前是扩展状态，收起列表
+            node.expand = false;
+            _collect(node.id);
+          } else {
+            //之前是收起状态，扩展列表
+            node.expand = true;
+            _expand(node);
+          }
+          setState(() {});
+        });
+  }
+
+  void _onItemCheckedChange(dynamic itemValue, bool checked) {
+    setState(() {
+      if (checked) {
+        if (_selectedValues.length >= widget.limit) {
+          ToastUtil.error("最多只能选择${widget.limit}项");
+        } else {
+          _selectedValues.add(itemValue);
+        }
+      } else {
+        _selectedValues.remove(itemValue);
+      }
+    });
+  }
+}

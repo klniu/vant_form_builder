@@ -1,7 +1,6 @@
-import 'package:flutter_vant_kit/main.dart';
-import 'package:quiver/iterables.dart';
-import 'package:quiver/strings.dart';
+import 'package:get/get.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
+import 'package:vant_form_builder/widget/picker.dart';
 
 class DataConverter {
   /// TreeNode转换为Picker的option PickerItem
@@ -25,12 +24,14 @@ class DataConverter {
     if (items == null || items.length == 0) {
       return 0;
     }
-    return max(items.map((e) => getPickerItemDeep(e.child) + 1).toList());
+    var heights = items.map((e) => getPickerItemDeep(e.child) + 1).toList();
+    heights.sort();
+    return heights.last;
   }
 
   /// 获取值在TreeNode列表值中的索引
   static DefaultTreeNode getIndexInTreeNodesByValue(String value, List<TreeNode> nodes) {
-    if (nodes == null || nodes.length == 0 || isBlank(value)) {
+    if (nodes == null || nodes.length == 0 || value.isBlank) {
       return null;
     }
     for (int i = 0; i < nodes.length; i++) {
