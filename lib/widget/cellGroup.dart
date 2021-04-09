@@ -4,16 +4,17 @@ import 'package:vant_form_builder/widget/divider.dart';
 class CellGroup extends StatelessWidget {
   // 分组标题
   final String title;
+
   // 是否显示外边框
   final bool border;
+
   // 自定义边框样式
   final BoxDecoration decoration;
+
   // 默认插槽
   final List<Widget> children;
 
-  CellGroup(
-      {Key key, this.title, this.children, this.border: true, this.decoration})
-      : super(key: key);
+  CellGroup({Key key, this.title, this.children, this.border: true, this.decoration}) : super(key: key);
 
   buildItems(List list) {
     List<Widget> widgets = [];
@@ -34,26 +35,23 @@ class CellGroup extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         title != null
-            ? Padding(
-                padding: EdgeInsets.only(
-                    left: 10.0, top: 10.0, right: 10.0, bottom: 8.0),
-                child: Text(title, style: Theme.of(context).textTheme.subtitle2),
+            ? Container(
+                width: double.infinity,
+                color: Theme.of(context).primaryColor,
+                padding: EdgeInsets.only(left: 10.0, top: 10.0, right: 10.0, bottom: 8.0),
+                child: Text(title, style: Theme.of(context).textTheme.subtitle2.copyWith(color: Colors.white)),
               )
             : Container(),
         Container(
           decoration: decoration ??
               BoxDecoration(
-                  border: border
-                      ? Border(
-                          top: BorderSide(
-                              width: 1.0,
-                              color: Theme.of(context).dividerColor),
-                          bottom: BorderSide(
-                              width: 1.0,
-                              color: Theme.of(context).dividerColor),
-                        )
-                      : null,
-                  ),
+                border: border
+                    ? Border(
+                        top: BorderSide(width: 1.0, color: Theme.of(context).dividerColor),
+                        bottom: BorderSide(width: 1.0, color: Theme.of(context).dividerColor),
+                      )
+                    : null,
+              ),
           child: Column(
             children: buildItems(children),
           ),
