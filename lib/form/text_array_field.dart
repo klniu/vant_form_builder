@@ -107,7 +107,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
                     isDense: true,
                     contentPadding: EdgeInsets.symmetric(vertical: 5),
                     hintText: widget.placeholder ?? "请输入" + widget.label,
-                    hintStyle: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey)),
+                    hintStyle: Theme.of(context).inputDecorationTheme.hintStyle),
                 keyboardType: widget.keyboardType,
                 enabled: !widget.disabled,
                 onChanged: (val) {

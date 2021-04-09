@@ -50,6 +50,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return FormBuilderTextField(
       name: widget.name,
       decoration: InputDecoration(
+          // https://github.com/flutter/flutter/issues/48287
+          // flutter 上游InputDecorationTheme中该选项无效，因此在此暂时使用
+          floatingLabelBehavior: FloatingLabelBehavior.always,
           labelText: widget.label + (widget.required ? " *" : ''),
           labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
           hintText: widget.placeholder ?? "请输入" + widget.label,

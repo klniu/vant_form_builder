@@ -84,8 +84,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                       ? Text("数据加载中...")
                       : _selected != null && _selected.length > 0
                           ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
-                          : Text("请选择" + widget.label,
-                              style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey))),
+                          : Text("请选择" + widget.label, style: Theme.of(context).inputDecorationTheme.hintStyle)),
               onTap: () async {
                 FocusScope.of(context).requestFocus(new FocusNode());
                 if (widget.nodes == null || widget.nodes.length == 0) {
