@@ -213,14 +213,24 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         alignment: Alignment.center,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          SizedBox(child: CircularProgressIndicator(strokeWidth: 2), width: 16, height: 16),
-          SizedBox(width: 10),
-          Container(
-              color: Theme.of(context).primaryColor,
-              child: Text("正在上传，第$uploadCount个...",
-                  style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white))),
-        ]));
+        child: Container(
+          constraints: BoxConstraints(minHeight: 40),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            SizedBox(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  backgroundColor: Colors.white,
+                ),
+                width: 18,
+                height: 18),
+            SizedBox(width: 10),
+            Text("正在上传，第$uploadCount个...", style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.white))
+          ]),
+        ));
   }
 
   Widget _buildAllFilePicker(FormFieldState<List<Attachment>> field) {
