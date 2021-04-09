@@ -40,11 +40,7 @@ class CellGroup extends StatelessWidget {
         title != null
             ? Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.all(Radius.circular(2)),
-                ),
+                color: Theme.of(context).primaryColor,
                 padding: EdgeInsets.only(left: 10.0, top: 10.0, right: 10.0, bottom: 8.0),
                 child: Text(title, style: Theme.of(context).textTheme.subtitle2.copyWith(color: Colors.white)),
               )
