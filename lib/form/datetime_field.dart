@@ -29,6 +29,7 @@ class DateTimeField extends StatelessWidget {
         format: DateFormat('yyyy-MM-dd HH:mm:ss'),
         inputType: this.inputType,
         decoration: InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.always,
           labelText: this.label + (this.required ? " *" : ''),
           labelStyle: this.required ? TextStyle(color: Colors.red) : null,
           hintText: this.placeholder ?? "请输入" + this.label,
