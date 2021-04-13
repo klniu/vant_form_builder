@@ -34,7 +34,6 @@ class DateTimeField extends StatelessWidget {
           labelStyle: this.required ? TextStyle(color: Colors.red) : null,
           hintText: this.placeholder ?? "请输入" + this.label,
         ),
-        style: Theme.of(context).textTheme.bodyText2,
         initialValue: this.defaultTime,
         validator: this.validator);
   }

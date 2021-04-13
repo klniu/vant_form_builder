@@ -133,16 +133,15 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
         }
         selectedOptions.add(Container(
           padding: EdgeInsets.all(3.0),
-          height: 26,
           margin: EdgeInsets.symmetric(vertical: 3),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             border: Border.all(
-              color: Colors.lightBlue,
+              color: Theme.of(context).accentColor,
               width: 1,
             ),
             borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Colors.lightBlue,
+            color: Theme.of(context).accentColor,
           ),
           child: Text(
             existingItem.title,
