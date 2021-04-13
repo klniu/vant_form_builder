@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
+import 'package:vant_form_builder/theme/button_styles.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
+import 'package:vant_form_builder/vant_form_builder.dart';
 
 class MultiSelectDialog extends StatefulWidget {
   final List<TreeNode> items;
@@ -68,54 +70,63 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: widget.title,
-      shape: widget.dialogShapeBorder,
-      contentPadding: EdgeInsets.only(top: 2.0),
-      content: Column(children: [
-        SearchBar(widget.items, (results) {
-          setState(() {
-            _searchResults = results;
-          });
-        }),
-        Expanded(
-            child: SingleChildScrollView(
-          child: Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: ListTileTheme(
-                contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
-                child: ListBody(
-                  children: _searchResults.map(_buildItem).toList(),
-                ),
-              )),
-        )),
-      ]),
-      actions: <Widget>[
-        FlatButton(
-          child: Text(widget.cancelButtonLabel),
-          onPressed: _onCancelTap,
-        ),
-        FlatButton(
-          child: Text(widget.okButtonLabel),
-          onPressed: _onSubmitTap,
-        )
-      ],
-    );
+    return ButtonBarTheme(
+        data: ButtonBarThemeData(alignment: MainAxisAlignment.center),
+        child: AlertDialog(
+          title: widget.title,
+          shape: widget.dialogShapeBorder,
+          contentPadding: EdgeInsets.only(top: 2.0),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            SearchBar(widget.items, (results) {
+              setState(() {
+                _searchResults = results;
+              });
+            }),
+            Flexible(
+                child: SingleChildScrollView(
+              child: Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: ListTileTheme(
+                    contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
+                    child: ListBody(
+                      children: _searchResults.map(_buildItem).toList(),
+                    ),
+                  )),
+            )),
+          ]),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ButtonStyles.primary(),
+              child: Text(widget.okButtonLabel),
+              onPressed: _onSubmitTap,
+            ),
+            SizedBox(width: 10),
+            ElevatedButton(
+              style: ButtonStyles.info(),
+              child: Text(widget.cancelButtonLabel),
+              onPressed: _onCancelTap,
+            ),
+          ],
+        ));
   }
 
   Widget _buildItem(TreeNode item) {
     final checked = _selectedValues.contains(item.value);
-    return CheckboxListTile(
-      value: checked,
-      checkColor: widget.checkBoxCheckColor,
-      activeColor: widget.checkBoxActiveColor,
-      title: Text(
-        item.title,
-        style: widget.labelStyle ?? Theme.of(context).textTheme.bodyText2,
-      ),
-      controlAffinity: ListTileControlAffinity.leading,
-      onChanged: (checked) => _onItemCheckedChange(item.value, checked),
-    );
+    return SizedBox(
+        height: 36,
+        child: ListTile(
+            title: Row(
+          children: <Widget>[
+            Expanded(child: Text(item.title)),
+            SizedBox(
+                width: 36,
+                height: 36,
+                child: Checkbox(
+                  value: checked,
+                  onChanged: (checked) => _onItemCheckedChange(item.value, checked),
+                ))
+          ],
+        )));
   }
 }
 
@@ -149,7 +160,7 @@ class SearchBarState extends State<SearchBar> {
             ),
             prefixIcon: Icon(
               Icons.search,
-              color: Colors.lightBlue,
+              color: Theme.of(context).accentColor,
             ),
             fillColor: Colors.white,
             filled: true,
@@ -157,8 +168,8 @@ class SearchBarState extends State<SearchBar> {
               child: Offstage(
                 offstage: _delOff,
                 child: Icon(
-                  Icons.delete_forever,
-                  color: Colors.grey,
+                  Icons.highlight_off,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
               onTap: () {

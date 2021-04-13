@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:vant_form_builder/form/multiselect_dialog.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
+import 'package:vant_form_builder/theme/button_styles.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
+import 'package:vant_form_builder/vant_form_builder.dart';
 
 class TreeSelectView extends StatefulWidget {
   final List<TreeNode> nodes;
@@ -67,33 +69,38 @@ class TreeSelectViewState extends State<TreeSelectView> with AutomaticKeepAliveC
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return AlertDialog(
-      title: widget.title,
-      shape: widget.dialogShapeBorder,
-      contentPadding: EdgeInsets.fromLTRB(10.0, 0, 10, 10),
-      content: Column(children: [
-        SearchBar(widget.nodes, _onSearch),
-        Expanded(
-            child: SingleChildScrollView(
-          child: ListTileTheme(
-            contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
-            child: ListBody(
-              children: expand.map(_buildNode).toList(),
+    return ButtonBarTheme(
+        data: ButtonBarThemeData(alignment: MainAxisAlignment.center),
+        child: AlertDialog(
+          title: widget.title,
+          shape: widget.dialogShapeBorder,
+          contentPadding: EdgeInsets.fromLTRB(10.0, 0, 10, 10),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            SearchBar(widget.nodes, _onSearch),
+            Flexible(
+                child: SingleChildScrollView(
+              child: ListTileTheme(
+                contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
+                child: ListBody(
+                  children: expand.map(_buildNode).toList(),
+                ),
+              ),
+            )),
+          ]),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ButtonStyles.primary(),
+              child: Text(widget.okButtonLabel),
+              onPressed: _onSubmitTap,
             ),
-          ),
-        )),
-      ]),
-      actions: <Widget>[
-        FlatButton(
-          child: Text(widget.cancelButtonLabel),
-          onPressed: _onCancelTap,
-        ),
-        FlatButton(
-          child: Text(widget.okButtonLabel),
-          onPressed: _onSubmitTap,
-        )
-      ],
-    );
+            SizedBox(width: 10),
+            ElevatedButton(
+              style: ButtonStyles.info(),
+              child: Text(widget.cancelButtonLabel),
+              onPressed: _onCancelTap,
+            ),
+          ],
+        ));
   }
 
   ///搜索结果
@@ -236,22 +243,24 @@ class TreeSelectViewState extends State<TreeSelectView> with AutomaticKeepAliveC
     final checked = _selectedValues.contains(node.value);
     return GestureDetector(
         child: Row(children: [
-          SizedBox(
-              height: 32.0,
-              width: 32.0,
-              child: Checkbox(
-                value: checked,
-                checkColor: widget.checkBoxCheckColor,
-                activeColor: widget.checkBoxActiveColor,
-                onChanged: (checked) => _onItemCheckedChange(node.value, checked),
-              )),
           SizedBox(width: showSearch ? 0 : node.depth * 10.0),
           if (node.hasChildren)
-            Icon(node.expand ? Icons.arrow_drop_down_rounded : Icons.arrow_right_rounded, size: 24)
+            Icon(node.expand ? Icons.keyboard_arrow_down_sharp : Icons.keyboard_arrow_right_sharp, size: 24)
           else
             SizedBox(width: 24),
           SizedBox(width: 8),
-          Expanded(child: Text(node.title, style: widget.labelStyle ?? Theme.of(context).textTheme.bodyText2)),
+          Expanded(child: Text(node.title, style: widget.labelStyle)),
+          Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                  height: 36.0,
+                  width: 36.0,
+                  child: Checkbox(
+                    value: checked,
+                    checkColor: widget.checkBoxCheckColor,
+                    activeColor: widget.checkBoxActiveColor,
+                    onChanged: (checked) => _onItemCheckedChange(node.value, checked),
+                  ))),
         ]),
         onTap: () {
           if (node.expand) {

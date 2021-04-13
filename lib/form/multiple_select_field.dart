@@ -83,7 +83,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                   child: widget.loading
                       ? Text("数据加载中...")
                       : _selected != null && _selected.length > 0
-                          ? Wrap(spacing: 8.0, runSpacing: 0.0, children: _buildSelectedOptions())
+                          ? _buildSelectedOptions()
                           : Text("请选择" + widget.label, style: Theme.of(context).inputDecorationTheme.hintStyle)),
               onTap: () async {
                 FocusScope.of(context).requestFocus(new FocusNode());
@@ -98,7 +98,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                       title: Text(
                         "请选择" + widget.label,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle1,
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),
                       ),
                       okButtonLabel: "确定",
                       cancelButtonLabel: "取消",
@@ -122,8 +122,8 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
         });
   }
 
-  List<Widget> _buildSelectedOptions() {
-    List<Widget> selectedOptions = [];
+  Widget _buildSelectedOptions() {
+    List<String> selectedOptions = [];
 
     if (_selected != null) {
       for (var item in _selected) {
@@ -131,27 +131,12 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
         if (existingItem == null) {
           continue;
         }
-        selectedOptions.add(Container(
-          padding: EdgeInsets.all(3.0),
-          margin: EdgeInsets.symmetric(vertical: 3),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            border: Border.all(
-              color: Theme.of(context).accentColor,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-            color: Theme.of(context).accentColor,
-          ),
-          child: Text(
+        selectedOptions.add(
             existingItem.title,
-            style: TextStyle(color: Colors.white),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ));
+        );
       }
     }
-    return selectedOptions;
+    return Text(selectedOptions.join(", "));
   }
 
   TreeNode getTreeNode(List<int> indices) {
