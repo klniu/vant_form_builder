@@ -12,6 +12,7 @@ export 'widget/pop_menus.dart';
 export 'widget/loading_elevated_button.dart';
 export 'widget/progress.dart';
 export 'widget/picker.dart';
+export 'widget/custom_dialog.dart';
 
 export 'form/attachment_picker_field.dart';
 export 'form/datetime_field.dart';
