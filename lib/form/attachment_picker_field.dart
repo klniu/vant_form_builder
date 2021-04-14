@@ -94,7 +94,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
                 labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
                 contentPadding: EdgeInsets.symmetric(vertical: 10),
               ),
-              child: _buildPicker(field));
+              child: Padding(padding: EdgeInsets.only(top: 5), child: _buildPicker(field)));
         });
   }
 
