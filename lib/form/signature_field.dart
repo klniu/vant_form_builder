@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:signature/signature.dart';
-import 'package:vant_form_builder/theme/button_styles.dart';
+import 'package:vant_form_builder/vant_form_builder.dart';
 
 class SignatureField extends StatefulWidget {
   final String name;
@@ -84,8 +84,7 @@ class _SignatureFieldState extends State<SignatureField> {
   Widget _buildPicker(FormFieldState field) {
     return GestureDetector(
       child: _imageUri == null
-          ? Text("点击添加签名",
-              textAlign: TextAlign.start, style: Theme.of(context).textTheme.bodyText2.copyWith(color: Colors.grey))
+          ? Text("点击添加签名", textAlign: TextAlign.start, style: Theme.of(context).inputDecorationTheme.hintStyle)
           : _imageWidget(),
       onTap: () {
         if (widget.disabled) {
@@ -93,46 +92,28 @@ class _SignatureFieldState extends State<SignatureField> {
         }
         FocusScope.of(context).requestFocus(new FocusNode());
         _controller.clear();
-        Get.dialog(
-            Center(
-                child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 15.0),
-                    decoration: new BoxDecoration(
-                        color: Get.theme.scaffoldBackgroundColor,
-                        borderRadius: new BorderRadius.all(const Radius.circular(8.0))),
-                    constraints: BoxConstraints(maxHeight: 320),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                      Text("手写签名", style: Get.textTheme.subtitle1),
-                      SizedBox(height: 10),
-                      Column(children: [
-                        Signature(
-                          controller: _controller,
-                          height: 200,
-                        ),
-                        SizedBox(height: 10),
-                        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                          ElevatedButton(
-                              style: ButtonStyles.primary(),
-                              child: Text("确定"),
-                              onPressed: () async {
-                                if (_controller.isNotEmpty) {
-                                  var data = await _controller.toPngBytes();
-                                  setState(() {
-                                    _imageUri = _dataUriPrefix + base64.encode(data);
-                                  });
-                                  field.didChange(_imageUri);
-                                  if (widget.onConfirm != null) {
-                                    await widget.onConfirm(_imageUri);
-                                  }
-                                  Get.back();
-                                }
-                              }),
-                          SizedBox(width: 40),
-                          ElevatedButton(onPressed: Get.back, style: ButtonStyles.info(), child: Text("取消"))
-                        ])
-                      ])
-                    ]))),
-            barrierDismissible: false);
+        customDialog(
+          Signature(
+            controller: _controller,
+            height: 200,
+          ),
+          title: "手写签名",
+          maxWidth: double.infinity,
+          onConfirmed: () async {
+            if (_controller.isNotEmpty) {
+              var data = await _controller.toPngBytes();
+              setState(() {
+                _imageUri = _dataUriPrefix + base64.encode(data);
+              });
+              field.didChange(_imageUri);
+              if (widget.onConfirm != null) {
+                await widget.onConfirm(_imageUri);
+              }
+              Get.back();
+            }
+          },
+          onCanceled: Get.back
+        );
       },
     );
   }
