@@ -7,6 +7,8 @@ customDialog(Widget content,
     Widget titleWidget,
     VoidCallback onConfirmed,
     VoidCallback onCanceled,
+    double maxWidth,
+    double maxHeight,
     barrierDismissible: false}) {
   Get.dialog(
       Center(
@@ -15,7 +17,8 @@ customDialog(Widget content,
               decoration: new BoxDecoration(
                   color: Get.theme.scaffoldBackgroundColor,
                   borderRadius: new BorderRadius.all(const Radius.circular(8.0))),
-              constraints: BoxConstraints(maxWidth: Get.size.width * 0.8, maxHeight: Get.size.height * 0.8),
+              constraints: BoxConstraints(
+                  maxWidth: maxWidth ?? Get.size.width * 0.8, maxHeight: maxHeight ?? Get.size.height * 0.8),
               child: Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
                 titleWidget == null
                     ? Text(title, style: Get.textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold))
