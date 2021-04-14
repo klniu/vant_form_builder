@@ -72,13 +72,11 @@ class _Picker extends State<Picker> {
 
   @override
   void initState() {
-    scrollControllers =
-        List.generate(widget.level, (i) => FixedExtentScrollController());
+    scrollControllers = List.generate(widget.level, (i) => FixedExtentScrollController());
 
     isMultiple = widget.level > 1;
     if (isMultiple) {
-      _selectIndex =
-          widget.defaultIndex ?? List.generate(widget.level, (i) => 0);
+      _selectIndex = widget.defaultIndex ?? List.generate(widget.level, (i) => 0);
       List.generate(widget.level, (i) {
         int index = _selectIndex[i];
         if (i == 0) {
@@ -98,8 +96,7 @@ class _Picker extends State<Picker> {
     super.initState();
   }
 
-  List<PickerItem> getFloatArr(List<PickerItem> list, int level,
-      {int baseLevel}) {
+  List<PickerItem> getFloatArr(List<PickerItem> list, int level, {int baseLevel}) {
     baseLevel = baseLevel ?? 0;
     int index = _selectIndex[baseLevel];
     if (baseLevel < level && list != null) {
@@ -115,19 +112,16 @@ class _Picker extends State<Picker> {
       decoration: BoxDecoration(
         border: Border(
             top: BorderSide(
-                width: widget.toolbarPosition == "bottom"
-                    ? 1.0
-                    : 0.0),
-            bottom: BorderSide(
-                width: widget.toolbarPosition == "top"
-                    ? 1.0
-                    : 0.0)),
+                color: Theme.of(context).dividerColor, width: widget.toolbarPosition == "bottom" ? 1.0 : 0.0),
+            bottom:
+                BorderSide(color: Theme.of(context).dividerColor, width: widget.toolbarPosition == "top" ? 1.0 : 0.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           buildCancelButton(context),
-          Text("${widget.title ?? ''}", style: Theme.of(context).textTheme.subtitle1),
+          Text("${widget.title ?? ''}",
+              style: Theme.of(context).textTheme.subtitle2.copyWith(fontWeight: FontWeight.bold)),
           buildConfirmButton(context),
         ],
       ),
@@ -139,14 +133,12 @@ class _Picker extends State<Picker> {
       type: MaterialType.transparency,
       child: InkWell(
         onTap: () {
-          if (widget.onConfirm != null)
-            widget.onConfirm(_selectValues, _selectIndex);
+          if (widget.onConfirm != null) widget.onConfirm(_selectValues, _selectIndex);
         },
         child: Container(
-          padding:  EdgeInsets.symmetric(horizontal: 16.0),
-          alignment: AlignmentDirectional.center,
-          child: Text("${widget.confirmButtonText}", style: Theme.of(context).textTheme.subtitle2)
-        ),
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            alignment: AlignmentDirectional.center,
+            child: Text("${widget.confirmButtonText}", style: Theme.of(context).textTheme.subtitle2)),
       ),
     );
   }
@@ -156,11 +148,10 @@ class _Picker extends State<Picker> {
       type: MaterialType.transparency,
       child: InkWell(
         onTap: () {
-          if (widget.onCancel != null)
-            widget.onCancel(_selectValues, _selectIndex);
+          if (widget.onCancel != null) widget.onCancel(_selectValues, _selectIndex);
         },
         child: Container(
-          padding:  EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
           alignment: AlignmentDirectional.center,
           child: Text("${widget.cancelButtonText}", style: Theme.of(context).textTheme.subtitle2),
         ),
@@ -182,13 +173,12 @@ class _Picker extends State<Picker> {
   }
 
   Widget buildPicker(List<PickerItem> column, int i) {
-    scrollControllers[i] = FixedExtentScrollController(
-        initialItem: isMultiple ? _selectIndex[i] : _selectIndex);
+    scrollControllers[i] = FixedExtentScrollController(initialItem: isMultiple ? _selectIndex[i] : _selectIndex);
     return Expanded(
       child: CupertinoPicker(
         scrollController: scrollControllers[i],
         itemExtent: widget.itemHeight,
-        diameterRatio: 1.1,
+        diameterRatio: 1.8,
         onSelectedItemChanged: (index) {
           setState(() {
             if (isMultiple) {
@@ -199,16 +189,14 @@ class _Picker extends State<Picker> {
                 _selectIndex[nextIndex] = 0;
                 scrollControllers[nextIndex].jumpToItem(0);
                 _columns[nextIndex] = getFloatArr(widget.colums, nextIndex);
-                _selectValues[nextIndex] =
-                    _columns[nextIndex][_selectIndex[nextIndex]].text;
+                _selectValues[nextIndex] = _columns[nextIndex][_selectIndex[nextIndex]].text;
               }
             } else {
               _selectIndex = index;
               _selectValues[i] = column[index].text;
             }
           });
-          if (widget.onChange != null)
-            widget.onChange(_selectValues, _selectIndex);
+          if (widget.onChange != null) widget.onChange(_selectValues, _selectIndex);
         },
         // 滚筒的曲率,就是弯曲的程度
         useMagnifier: false,
@@ -243,18 +231,13 @@ class _Picker extends State<Picker> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                widget.showToolbar && widget.toolbarPosition == 'top'
-                    ? buildToolbar(context)
-                    : Container(),
+                widget.showToolbar && widget.toolbarPosition == 'top' ? buildToolbar(context) : Container(),
                 Expanded(
                   child: Row(
-                    children: List.generate(
-                        _columns.length, (i) => buildPicker(_columns[i], i)),
+                    children: List.generate(_columns.length, (i) => buildPicker(_columns[i], i)),
                   ),
                 ),
-                widget.showToolbar && widget.toolbarPosition == 'bottom'
-                    ? buildToolbar(context)
-                    : Container(),
+                widget.showToolbar && widget.toolbarPosition == 'bottom' ? buildToolbar(context) : Container(),
               ],
             ),
             widget.loading ? buildLoadingMask() : Container(),
