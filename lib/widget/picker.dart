@@ -120,8 +120,7 @@ class _Picker extends State<Picker> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           buildCancelButton(context),
-          Text("${widget.title ?? ''}",
-              style: Theme.of(context).textTheme.subtitle2.copyWith(fontWeight: FontWeight.bold)),
+          Text("${widget.title ?? ''}", style: Theme.of(context).textTheme.subtitle2),
           buildConfirmButton(context),
         ],
       ),
