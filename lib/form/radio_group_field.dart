@@ -7,11 +7,11 @@ class RadioGroupField extends StatelessWidget {
   final String label;
   final bool required;
   final FormFieldValidator validator;
-  final String defaultValue;
+  final dynamic defaultValue;
   final Axis direction;
   final String placeholder;
   final bool enabled;
-  final void Function(String) onChanged;
+  final void Function(dynamic) onChanged;
 
   const RadioGroupField(this.name, this.items,
       {Key key,
@@ -21,7 +21,7 @@ class RadioGroupField extends StatelessWidget {
       this.defaultValue,
       this.placeholder,
       this.onChanged,
-        this.enabled,
+      this.enabled = true,
       this.direction = Axis.vertical})
       : super(key: key);
 
@@ -38,6 +38,8 @@ class RadioGroupField extends StatelessWidget {
           labelStyle: this.required ? TextStyle(color: Colors.red) : null,
           hintText: this.placeholder ?? "请输入" + this.label,
         ),
-        options: items);
+        options: items,
+      onChanged: onChanged,
+    );
   }
 }
