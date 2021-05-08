@@ -158,15 +158,16 @@ class TreeSelectViewState extends State<TreeSelectView> with AutomaticKeepAliveC
   void _expandDefault() {
     var idToList = Map.fromIterable(list, key: (e) => e.id);
     // 在已经需要展开的项中找逐级找父项，并标记为展开
-    for (TreeNode? node in list) {
+    for (TreeNode node in list) {
       if (node.expand) {
+        TreeNode? tempNode = node;
         do {
-          var parentNode = idToList[node!.parentId];
+          var parentNode = idToList[tempNode!.parentId];
           if (parentNode != null) {
             parentNode.expand = true;
           }
-          node = parentNode;
-        } while (node != null);
+          tempNode = parentNode;
+        } while (tempNode != null);
       }
     }
     for (var node in list) {
