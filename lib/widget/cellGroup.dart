@@ -3,22 +3,22 @@ import 'package:vant_form_builder/widget/divider.dart';
 
 class CellGroup extends StatelessWidget {
   // 分组标题
-  final String title;
+  final String? title;
 
   // 是否显示外边框
   final bool border;
 
   // 自定义边框样式
-  final BoxDecoration decoration;
+  final BoxDecoration? decoration;
 
   final bool isDivider;
 
-  final EdgeInsetsGeometry childrenPadding;
+  final EdgeInsetsGeometry? childrenPadding;
 
   // 默认插槽
-  final List<Widget> children;
+  final List<Widget>? children;
 
-  CellGroup({Key key, this.title, this.children, this.border: true, this.decoration, this.childrenPadding, this
+  CellGroup({Key? key, this.title, this.children, this.border: true, this.decoration, this.childrenPadding, this
       .isDivider = true})
       : super(key: key);
 
@@ -45,14 +45,14 @@ class CellGroup extends StatelessWidget {
                 width: double.infinity,
                 color: Theme.of(context).primaryColor,
                 padding: EdgeInsets.only(left: 10.0, top: 5.0, right: 10.0, bottom: 5.0),
-                child: Text(title,
+                child: Text(title!,
                     style: Theme.of(context)
                         .textTheme
-                        .subtitle2
+                        .subtitle2!
                         .copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
               )
             : Container(),
-        ...buildItems(children),
+        ...buildItems(children!),
         SizedBox(height: 10)
       ],
     );

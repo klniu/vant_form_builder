@@ -4,11 +4,11 @@ import 'package:vant_form_builder/theme/button_styles.dart';
 
 customDialog(Widget content,
     {String title = "",
-    Widget titleWidget,
-    VoidCallback onConfirmed,
-    VoidCallback onCanceled,
-    double maxWidth,
-    double maxHeight,
+    Widget? titleWidget,
+    VoidCallback? onConfirmed,
+    VoidCallback? onCanceled,
+    double? maxWidth,
+    double? maxHeight,
     barrierDismissible: false}) {
   Get.dialog(
       Center(
@@ -21,7 +21,7 @@ customDialog(Widget content,
                   maxWidth: maxWidth ?? Get.size.width * 0.8, maxHeight: maxHeight ?? Get.size.height * 0.8),
               child: Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
                 titleWidget == null
-                    ? Text(title, style: Get.textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold))
+                    ? Text(title, style: Get.textTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold))
                     : titleWidget,
                 SizedBox(height: 10),
                 Flexible(child: SingleChildScrollView(child: content)),

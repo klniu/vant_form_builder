@@ -6,23 +6,23 @@ import 'package:vant_form_builder/vant_form_builder.dart';
 
 class MultiSelectDialog extends StatefulWidget {
   final List<TreeNode> items;
-  final List initialSelectedValues;
-  final Widget title;
+  final List? initialSelectedValues;
+  final Widget? title;
   final String okButtonLabel;
   final String cancelButtonLabel;
-  final TextStyle labelStyle;
-  final ShapeBorder dialogShapeBorder;
-  final Color checkBoxCheckColor;
-  final Color checkBoxActiveColor;
+  final TextStyle? labelStyle;
+  final ShapeBorder? dialogShapeBorder;
+  final Color? checkBoxCheckColor;
+  final Color? checkBoxActiveColor;
   final int limit;
 
   MultiSelectDialog({
-    Key key,
-    this.items,
+    Key? key,
+    required this.items,
     this.initialSelectedValues,
     this.title,
-    this.okButtonLabel,
-    this.cancelButtonLabel,
+    this.okButtonLabel = "确定",
+    this.cancelButtonLabel = "取消",
     this.labelStyle,
     this.dialogShapeBorder,
     this.checkBoxActiveColor,
@@ -35,20 +35,20 @@ class MultiSelectDialog extends StatefulWidget {
 }
 
 class _MultiSelectDialogState extends State<MultiSelectDialog> {
-  final _selectedValues = List();
-  List<TreeNode> _searchResults;
+  final _selectedValues = [];
+  late List<TreeNode> _searchResults;
 
   void initState() {
     super.initState();
     _searchResults = widget.items;
     if (widget.initialSelectedValues != null) {
-      _selectedValues.addAll(widget.initialSelectedValues);
+      _selectedValues.addAll(widget.initialSelectedValues!);
     }
   }
 
-  void _onItemCheckedChange(dynamic itemValue, bool checked) {
+  void _onItemCheckedChange(dynamic itemValue, bool? checked) {
     setState(() {
-      if (checked) {
+      if (checked == true) {
         if (_selectedValues.length > widget.limit) {
           ToastUtil.error("最多只能选择${widget.limit}项");
         } else {
@@ -184,7 +184,7 @@ class SearchBarState extends State<SearchBar> {
             text: _key,
             selection: TextSelection.fromPosition(
               TextPosition(
-                offset: _key == null ? 0 : _key.length, //保证光标在最后
+                offset: _key.length, //保证光标在最后
               ),
             ),
           ),
@@ -197,7 +197,7 @@ class SearchBarState extends State<SearchBar> {
   ///关键字查找
   void search(String value) {
     _key = value;
-    List<TreeNode> tmp = List();
+    List<TreeNode> tmp = [];
     if (value.isEmpty) {
       //如果关键字为空，代表全匹配
       _delOff = true;

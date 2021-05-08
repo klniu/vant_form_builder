@@ -4,16 +4,16 @@ import 'package:get/get.dart';
 /// 详情行，child与text二选一
 class DetailRow extends StatelessWidget {
   final String label;
-  final Widget child;
-  final double labelWidth;
+  final Widget? child;
+  final double? labelWidth;
   final String text;
-  final Color textColor;
-  final FontWeight textFontWeight;
+  final Color? textColor;
+  final FontWeight? textFontWeight;
   final bool required;
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
 
   const DetailRow(this.label,
-      {Key key,
+      {Key? key,
       this.labelWidth,
       this.child,
       this.text = "",
@@ -32,15 +32,15 @@ class DetailRow extends StatelessWidget {
               width: labelWidth ?? 80.0,
               height: 30.0,
               child: Row(children: [
-                if (required) Text("*", style: Get.textTheme.bodyText2.copyWith(color: Colors.red)),
+                if (required) Text("*", style: Get.textTheme.bodyText2!.copyWith(color: Colors.red)),
                 Flexible(
                     child: Text(label,
                         textAlign: TextAlign.start, overflow: TextOverflow.ellipsis)),
               ])),
           Expanded(
               child: child ??
-                  Text(text ?? "",
-                      style: Get.textTheme.bodyText2.copyWith(color: this.textColor, fontWeight: textFontWeight)))
+                  Text(text,
+                      style: Get.textTheme.bodyText2!.copyWith(color: this.textColor, fontWeight: textFontWeight)))
         ]));
   }
 }

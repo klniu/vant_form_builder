@@ -1,14 +1,14 @@
 class Attachment {
-  String id;
-  String tenantId;
-  String businessId;
-  String originalName;
-  String name;
-  String fileType;
-  String fileUsage;
-  int sort;
-  String url;
-  String usageName;
+  String? id;
+  String? tenantId;
+  String? businessId;
+  String? originalName;
+  String? name;
+  String? fileType;
+  String? fileUsage;
+  int? sort;
+  String? url;
+  String? usageName;
 
   Attachment(
       {this.id,
@@ -23,16 +23,16 @@ class Attachment {
       this.usageName});
 
   factory Attachment.fromJson(Map<String, dynamic> json) => Attachment(
-  id: json['id'] as String,
-      tenantId: json['tenantId'] as String,
-      businessId: json['businessId'] as String,
-      originalName: json['originalName'] as String,
-      name: json['name'] as String,
-      fileType: json['fileType'] as String,
-      fileUsage: json['fileUsage'] as String,
-      sort: json['sort'] as int,
-      url: json['url'] as String,
-      usageName: json['usageName'] as String,
+  id: json['id'] as String?,
+      tenantId: json['tenantId'] as String?,
+      businessId: json['businessId'] as String?,
+      originalName: json['originalName'] as String?,
+      name: json['name'] as String?,
+      fileType: json['fileType'] as String?,
+      fileUsage: json['fileUsage'] as String?,
+      sort: json['sort'] as int?,
+      url: json['url'] as String?,
+      usageName: json['usageName'] as String?,
   );
 
   Map<String, dynamic> toJson() =>

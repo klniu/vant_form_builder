@@ -9,21 +9,21 @@ class TreeSelectField extends StatefulWidget {
   final String name;
   final List<TreeNode> nodes;
   final String label;
-  final String placeholder;
+  final String? placeholder;
   final bool required;
-  final FormFieldValidator validator;
-  final List<String> defaultValue;
-  final TextStyle chipLabelStyle;
-  final Color chipBackGroundColor;
+  final FormFieldValidator? validator;
+  final List<String>? defaultValue;
+  final TextStyle? chipLabelStyle;
+  final Color? chipBackGroundColor;
   final bool loading;
   final int limit;
-  final dynamic Function(List) onConfirm;
+  final dynamic Function(List?)? onConfirm;
 
   TreeSelectField(
     this.name, {
-    Key key,
+    Key? key,
     this.nodes = const [],
-    this.label,
+    this.label = "",
     this.placeholder,
     this.required = false,
     this.validator,
@@ -40,19 +40,17 @@ class TreeSelectField extends StatefulWidget {
 }
 
 class _TreeSelectFieldState extends State<TreeSelectField> {
-  List<String> _selected;
+  List<String>? _selected;
 
   _TreeSelectFieldState();
-
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
     if (widget.defaultValue != null) {
       _selected = widget.defaultValue;
     } else {
-      FormBuilderState formBuilderState = of(context);
-      if (formBuilderState != null && formBuilderState.initialValue != null) {
+      FormBuilderState? formBuilderState = context.findAncestorStateOfType<FormBuilderState>();
+      if (formBuilderState != null) {
         _selected = formBuilderState.initialValue[widget.name] ?? [];
       }
     }
@@ -74,19 +72,19 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
           return GestureDetector(
               onTap: () async {
                 FocusScope.of(context).requestFocus(new FocusNode());
-                if (widget.nodes == null || widget.nodes.length == 0) {
+                if (widget.nodes.length == 0) {
                   ToastUtil.info("无数据");
                   return;
                 }
 
-                List selectedValues = await showDialog<List>(
+                List? selectedValues = await showDialog<List>(
                   context: context,
                   builder: (BuildContext context) {
                     return TreeSelectView(
                       widget.nodes,
                       title: Text("请选择" + widget.label,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold)),
+                          style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold)),
                       okButtonLabel: "确定",
                       cancelButtonLabel: "取消",
                       initialSelectedValues: _selected,
@@ -101,7 +99,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                   });
                   field.didChange(_selected);
                   if (widget.onConfirm != null) {
-                    widget.onConfirm(_selected);
+                    widget.onConfirm!(_selected);
                   }
                 }
               },
@@ -114,7 +112,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                   ),
                   child: widget.loading
                       ? Text("数据加载中...")
-                      : _selected != null && _selected.length > 0
+                      : _selected != null && _selected!.length > 0
                           ? _buildSelectedOptions()
                           : Text(widget.placeholder ?? "请选择" + widget.label,
                               style: Theme.of(context).inputDecorationTheme.hintStyle)));
@@ -125,7 +123,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
     List<String> selectedOptions = [];
 
     if (_selected != null) {
-      for (var item in _selected) {
+      for (var item in _selected!) {
         var existingItem = DataConverter.getIndexInTreeNodesByValue(item, widget.nodes);
         if (existingItem == null) {
           continue;

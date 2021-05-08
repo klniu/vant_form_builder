@@ -6,15 +6,15 @@ class RadioGroupField extends StatelessWidget {
   final List<FormBuilderFieldOption> items;
   final String label;
   final bool required;
-  final FormFieldValidator validator;
+  final FormFieldValidator? validator;
   final dynamic defaultValue;
   final Axis direction;
-  final String placeholder;
+  final String? placeholder;
   final bool enabled;
-  final void Function(dynamic) onChanged;
+  final void Function(dynamic)? onChanged;
 
   const RadioGroupField(this.name, this.items,
-      {Key key,
+      {Key? key,
       this.label = "",
       this.required = false,
       this.validator,

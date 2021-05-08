@@ -7,7 +7,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 //照片墙
 class ImageWall extends StatefulWidget {
   // 图片文件数组
-  final List<String> images;
+  final List<String>? images;
 
   // 是否可以多选图片
   final bool multiple;
@@ -25,19 +25,19 @@ class ImageWall extends StatefulWidget {
   final BoxFit imageFit;
 
   // 自定义 button
-  final Widget uploadBtn;
+  final Widget? uploadBtn;
 
   // 上传后返回全部图片信息
-  final Function(List<String> newImages) onChange;
+  final Function(List<String?> newImages) onChange;
 
   // 监听图片上传
-  final Future<List<String>> Function(ImageFiles files) onUpload;
+  final Future<List<String>?> Function(ImageFiles files) onUpload;
 
   // 删除图片后的回调
-  final Function(String removedUrl) onRemove;
+  final Function(String? removedUrl)? onRemove;
 
   const ImageWall({
-    Key key,
+    Key? key,
     this.multiple: false,
     this.onlyCamera: false,
     this.length: 4,
@@ -45,8 +45,8 @@ class ImageWall extends StatefulWidget {
     this.images,
     this.uploadBtn,
     this.imageFit: BoxFit.cover,
-    @required this.onChange,
-    @required this.onUpload,
+    required this.onChange,
+    required this.onUpload,
     this.onRemove,
   }) : super(key: key);
 
@@ -55,7 +55,7 @@ class ImageWall extends StatefulWidget {
 }
 
 class _ImageWall extends State<ImageWall> {
-  List<String> images = [];
+  List<String?> images = [];
   double space = 10.0;
   final picker = ImagePicker();
 
@@ -77,7 +77,7 @@ class _ImageWall extends State<ImageWall> {
     for (int i = 0; i < images.length; i++) {
       widgets.add(_buildImageItem(i));
     }
-    if (widget.count == null || images.length < widget.count) {
+    if (images.length < widget.count) {
       widgets.add(_buildAddImageButton());
     }
     return widgets;
@@ -85,11 +85,10 @@ class _ImageWall extends State<ImageWall> {
 
   Widget _buildImageItem(int index) {
     return Stack(
-      overflow: Overflow.visible,
       children: <Widget>[
         ClipRRect(
             child: Image.network(
-              images[index],
+              images[index]!,
               fit: widget.imageFit,
               width: 80.0,
               height: 80.0,
@@ -102,13 +101,13 @@ class _ImageWall extends State<ImageWall> {
             borderRadius: BorderRadius.circular(999.0),
             child: Icon(Icons.cancel, color: Colors.grey, size: 16.0),
             onTap: () {
-              String removedUrl;
+              String? removedUrl;
               setState(() {
                 removedUrl = images.removeAt(index);
               });
               widget.onChange(images);
               if (widget.onRemove != null) {
-                widget.onRemove(removedUrl);
+                widget.onRemove!(removedUrl);
               }
             },
           ),
@@ -152,7 +151,7 @@ class _ImageWall extends State<ImageWall> {
         } on Exception catch (e) {
           print(e.toString());
         }
-        List<String> urls = await widget.onUpload(imageFiles);
+        List<String>? urls = await widget.onUpload(imageFiles);
         if (urls == null || urls.isEmpty) {
           return;
         }
@@ -164,16 +163,16 @@ class _ImageWall extends State<ImageWall> {
     );
   }
 
-  Future<PickedFile> pickImageFromCamera() async {
+  Future<PickedFile?> pickImageFromCamera() async {
     return await picker.getImage(source: ImageSource.camera);
   }
 }
 
 class ImageFiles {
-  List<Asset> assets;
-  PickedFile pickedFile;
+  List<Asset>? assets;
+  PickedFile? pickedFile;
 
   bool isEmpty() {
-    return (assets == null || assets.length == 0) && pickedFile == null;
+    return (assets == null || assets!.length == 0) && pickedFile == null;
   }
 }

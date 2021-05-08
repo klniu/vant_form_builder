@@ -6,22 +6,22 @@ class CustomTextField extends StatefulWidget {
   final String name;
   final String label;
   final bool required;
-  final FormFieldValidator validator;
+  final FormFieldValidator? validator;
   final int rows;
-  final int maxLength;
-  final String defaultValue;
-  final String placeholder;
-  final TextInputType keyboardType;
-  final List<TextInputFormatter> inputFormatters;
-  final Function(String) onChange;
+  final int? maxLength;
+  final String? defaultValue;
+  final String? placeholder;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final Function(String)? onChange;
   final bool disabled;
   final bool obscureText;
   final TextAlign inputAlign;
-  final Widget prefixIcon;
+  final Widget? prefixIcon;
 
   const CustomTextField(this.name,
-      {Key key,
-        this.label,
+      {Key? key,
+        this.label = "",
         this.required = false,
         this.validator,
         this.rows = 1,

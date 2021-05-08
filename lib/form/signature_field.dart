@@ -10,16 +10,16 @@ import 'package:vant_form_builder/vant_form_builder.dart';
 class SignatureField extends StatefulWidget {
   final String name;
   final String label;
-  final double labelWidth;
+  final double? labelWidth;
   final bool required;
-  final FormFieldValidator validator;
-  final String defaultSignature; // data uri or url
-  final Future Function(String) onConfirm;
+  final FormFieldValidator? validator;
+  final String? defaultSignature; // data uri or url
+  final Future Function(String?)? onConfirm;
   final bool disabled;
 
   const SignatureField(this.name,
-      {Key key,
-      this.label,
+      {Key? key,
+      this.label = "",
       this.labelWidth,
       this.required = false,
       this.validator,
@@ -39,18 +39,16 @@ class _SignatureFieldState extends State<SignatureField> {
     exportBackgroundColor: Colors.white,
   );
 
-  String _imageUri;
+  String? _imageUri;
   static const _dataUriPrefix = "data:image/png;base64,";
-
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
     if (widget.defaultSignature != null) {
       _imageUri = widget.defaultSignature;
     } else {
-      FormBuilderState formBuilderState = of(context);
-      if (formBuilderState != null && formBuilderState.initialValue != null) {
+      FormBuilderState? formBuilderState = context.findAncestorStateOfType<FormBuilderState>();
+      if (formBuilderState != null) {
         _imageUri = formBuilderState.initialValue[widget.name];
       }
     }
@@ -59,7 +57,7 @@ class _SignatureFieldState extends State<SignatureField> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -103,11 +101,11 @@ class _SignatureFieldState extends State<SignatureField> {
             if (_controller.isNotEmpty) {
               var data = await _controller.toPngBytes();
               setState(() {
-                _imageUri = _dataUriPrefix + base64.encode(data);
+                _imageUri = _dataUriPrefix + base64.encode(data!);
               });
               field.didChange(_imageUri);
               if (widget.onConfirm != null) {
-                await widget.onConfirm(_imageUri);
+                await widget.onConfirm!(_imageUri);
               }
               Get.back();
             }
@@ -119,17 +117,17 @@ class _SignatureFieldState extends State<SignatureField> {
   }
 
   Widget _imageWidget() {
-    if (_imageUri.startsWith(_dataUriPrefix)) {
-      return Image.memory(_base64ImageToByte(_imageUri), height: 30, alignment: Alignment.centerLeft);
-    } else if (_imageUri.startsWith("http")) {
-      return Image.network(_imageUri, height: 30, alignment: Alignment.centerLeft);
+    if (_imageUri!.startsWith(_dataUriPrefix)) {
+      return Image.memory(_base64ImageToByte(_imageUri)!, height: 30, alignment: Alignment.centerLeft);
+    } else if (_imageUri!.startsWith("http")) {
+      return Image.network(_imageUri!, height: 30, alignment: Alignment.centerLeft);
     } else {
       return Text("无效签名");
     }
   }
 
-  Uint8List _base64ImageToByte(String dataUri) {
-    if (GetUtils.isNullOrBlank(dataUri) || !dataUri.startsWith("data:image")) return null;
+  Uint8List? _base64ImageToByte(String? dataUri) {
+    if (GetUtils.isNullOrBlank(dataUri)! || !dataUri!.startsWith("data:image")) return null;
     var index = dataUri.indexOf(",");
     if (index == -1) {
       return null;

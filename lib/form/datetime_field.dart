@@ -6,14 +6,14 @@ class DateTimeField extends StatelessWidget {
   final String name;
   final String label;
   final bool required;
-  final FormFieldValidator validator;
-  final DateTime defaultTime;
+  final FormFieldValidator? validator;
+  final DateTime? defaultTime;
   final InputType inputType;
-  final String placeholder;
+  final String? placeholder;
 
   const DateTimeField(this.name,
-      {Key key,
-      this.label,
+      {Key? key,
+      this.label = "",
       this.required = false,
       this.validator,
       this.inputType: InputType.date,

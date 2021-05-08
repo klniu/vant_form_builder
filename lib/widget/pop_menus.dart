@@ -11,7 +11,7 @@ typedef _ClickCallBack = void Function(int selectIndex, String selectText);
 /// change from https://github.com/iotjin/jh_flutter_demo
 class JhPopMenus {
   //显示pop
-  static void show(BuildContext context, List<MenuItem> items, {_ClickCallBack clickCallback}) {
+  static void show(BuildContext context, List<MenuItem> items, {_ClickCallBack? clickCallback}) {
     //Cell
     Widget _buildMenuCell(dataArr) {
       return ListView.builder(
@@ -58,12 +58,12 @@ class JhPopMenus {
       );
     }
 
-    Navigator.of(context).push(DialogRouter(_basePopMenus(child: _menusView(items))));
+    Navigator.of(context).push(DialogRouter(_basePopMenus(_menusView(items))));
   }
 
   //显示带线带背景 pop
   static void showLinePop(BuildContext context, List<MenuItem> items,
-      {bool isShowBg = false, _ClickCallBack clickCallback}) {
+      {bool isShowBg = false, _ClickCallBack? clickCallback}) {
     //带线
     Widget _buildMenuLineCell(dataArr) {
       return ListView.separated(
@@ -132,10 +132,10 @@ class JhPopMenus {
           context: context,
           barrierDismissible: false,
           builder: (context) {
-            return _basePopMenus(child: _menusView(items));
+            return _basePopMenus(_menusView(items));
           });
     } else {
-      Navigator.of(context).push(DialogRouter(_basePopMenus(child: _menusView(items))));
+      Navigator.of(context).push(DialogRouter(_basePopMenus(_menusView(items))));
     }
   }
 
@@ -152,15 +152,14 @@ class JhPopMenus {
 
 class MenuItem {
   String text;
-  IconData iconData;
+  IconData? iconData;
 
   MenuItem(this.text, {this.iconData});
 }
 
 class _basePopMenus extends Dialog {
-  _basePopMenus({
-    Key key,
-    this.child,
+  _basePopMenus(this.child, {
+    Key? key,
   }) : super(key: key);
 
   final Widget child;
@@ -197,12 +196,12 @@ class DialogRouter extends PageRouteBuilder {
 
 class CustomDialog extends Dialog {
   CustomDialog({
-    Key key,
+    Key? key,
     this.child,
     this.clickBgHidden: false, //点击背景隐藏，默认不隐藏
   }) : super(key: key);
 
-  final Widget child;
+  final Widget? child;
   final bool clickBgHidden;
 
   @override

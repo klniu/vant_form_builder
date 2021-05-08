@@ -4,19 +4,19 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 class TextArrayField extends StatefulWidget {
   final String name;
   final String label;
-  final double labelWidth;
+  final double? labelWidth;
   final bool required;
-  final FormFieldValidator validator;
-  final String defaultText;
-  final String placeholder;
-  final TextInputType keyboardType;
-  final Function(String) onChange;
+  final FormFieldValidator? validator;
+  final String? defaultText;
+  final String? placeholder;
+  final TextInputType? keyboardType;
+  final Function(String)? onChange;
   final bool disabled;
   final String splitString;
 
   const TextArrayField(this.name,
-      {Key key,
-      this.label,
+      {Key? key,
+      this.label = "",
       this.labelWidth,
       this.required = false,
       this.validator,
@@ -36,15 +36,13 @@ class _TextArrayFieldState extends State<TextArrayField> {
   List<TextEditingController> _controllers = [new TextEditingController()];
   List<TextEditingController> _toBeDisposed = [];
 
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
-
   @override
   void initState() {
     if (widget.defaultText != null) {
       _splitText(widget.defaultText);
     } else {
-      FormBuilderState formBuilderState = of(context);
-      if (formBuilderState != null && formBuilderState.initialValue != null) {
+      FormBuilderState? formBuilderState = context.findAncestorStateOfType<FormBuilderState>();
+      if (formBuilderState != null) {
         _splitText(formBuilderState.initialValue[widget.name]);
       }
     }
@@ -62,7 +60,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
     super.dispose();
   }
 
-  _splitText(String text) {
+  _splitText(String? text) {
     if (text == null || text.isEmpty) return;
     var texts = text.split(widget.splitString);
     if (texts.length < _controllers.length) {
@@ -114,7 +112,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
                   var val = _controllers.map((e) => e.text).join(widget.splitString);
                   field.didChange(val);
                   if (widget.onChange != null) {
-                    widget.onChange(val);
+                    widget.onChange!(val);
                   }
                 })),
         ElevatedButton(
@@ -133,7 +131,7 @@ class _TextArrayFieldState extends State<TextArrayField> {
               var val = _controllers.map((e) => e.text).join(widget.splitString);
               field.didChange(val);
               if (widget.onChange != null) {
-                widget.onChange(val);
+                widget.onChange!(val);
               }
             }
           },

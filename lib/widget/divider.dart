@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 
 class NDivider extends StatefulWidget {
   // 分隔符文字
-  final String content;
+  final String? content;
   // 文字颜色
-  final Color fontColor;
+  final Color? fontColor;
   // 文字大小
   final double fontSize;
   // 分割线颜色
-  final Color lineColor;
+  final Color? lineColor;
   // 是否为细分割线
   final bool hairline;
   // 文本位置
   final String contentPosition;
   // 自定义分隔符内容
-  final Widget child;
+  final Widget? child;
 
   NDivider(
-      {Key key,
+      {Key? key,
       this.content,
       this.fontColor,
       this.fontSize: 14.0,
@@ -38,14 +38,14 @@ class _NDivider extends State<NDivider> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (widget.child != null || widget.content != null) _onLayoutDone(_);
     });
     super.initState();
   }
 
   _onLayoutDone(_) {
-    RenderBox text = _textKey.currentContext.findRenderObject();
+    RenderBox text = _textKey.currentContext!.findRenderObject() as RenderBox;
     double textWidth = text.size.width;
     setState(() {
       itemWidth = (MediaQuery.of(context).size.width - textWidth) / 2;
@@ -82,7 +82,7 @@ class _NDivider extends State<NDivider> {
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: widget.child != null
                       ? widget.child
-                      : Text(widget.content,
+                      : Text(widget.content!,
                           style: TextStyle(
                               fontSize: widget.fontSize,
                               color: widget.fontColor)),

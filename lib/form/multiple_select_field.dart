@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -10,22 +11,20 @@ class MultipleSelectField extends StatefulWidget {
   final String name;
   final List<TreeNode> nodes;
   final String label;
-  final double labelWidth;
   final bool required;
-  final FormFieldValidator validator;
-  final List<String> defaultValue;
-  final String placeholder;
-  final TextStyle chipLabelStyle;
-  final Color chipBackGroundColor;
+  final FormFieldValidator? validator;
+  final List<String>? defaultValue;
+  final String? placeholder;
+  final TextStyle? chipLabelStyle;
+  final Color? chipBackGroundColor;
   final bool loading;
   final int limit;
-  final dynamic Function(List) onConfirm;
+  final dynamic Function(List)? onConfirm;
 
   MultipleSelectField(this.name,
-      {Key key,
+      {Key? key,
       this.nodes = const [],
-      this.label,
-      this.labelWidth,
+      this.label = "",
       this.required = false,
       this.validator,
       this.defaultValue,
@@ -42,19 +41,19 @@ class MultipleSelectField extends StatefulWidget {
 }
 
 class _MultipleSelectFieldState extends State<MultipleSelectField> {
-  List<String> _selected;
+  List<String> _selected = [];
 
   _MultipleSelectFieldState();
 
-  static FormBuilderState of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
+  static FormBuilderState? of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
     if (widget.defaultValue != null) {
-      _selected = widget.defaultValue;
+      _selected = widget.defaultValue!;
     } else {
-      FormBuilderState formBuilderState = of(context);
-      if (formBuilderState != null && formBuilderState.initialValue != null) {
+      FormBuilderState? formBuilderState = of(context);
+      if (formBuilderState != null) {
         _selected = formBuilderState.initialValue[widget.name] ?? [];
       }
     }
@@ -68,9 +67,11 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
         validator: widget.validator,
         initialValue: widget.defaultValue,
         onReset: () {
-          setState(() {
-            _selected = widget.defaultValue;
-          });
+          if (widget.defaultValue != null) {
+            setState(() {
+              _selected = widget.defaultValue!;
+            });
+          }
         },
         builder: (FormFieldState<dynamic> field) {
           return GestureDetector(
@@ -82,23 +83,23 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                       hintText: widget.placeholder ?? "请输入" + widget.label),
                   child: widget.loading
                       ? Text("数据加载中...")
-                      : _selected != null && _selected.length > 0
+                      : _selected.length > 0
                           ? _buildSelectedOptions()
                           : Text("请选择" + widget.label, style: Theme.of(context).inputDecorationTheme.hintStyle)),
               onTap: () async {
                 FocusScope.of(context).requestFocus(new FocusNode());
-                if (widget.nodes == null || widget.nodes.length == 0) {
+                if (widget.nodes.length == 0) {
                   ToastUtil.info("无数据");
                   return;
                 }
-                List selectedValues = await showDialog<List>(
+                List? selectedValues = await showDialog<List>(
                   context: context,
                   builder: (BuildContext context) {
                     return MultiSelectDialog(
                       title: Text(
                         "请选择" + widget.label,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle1.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold),
                       ),
                       okButtonLabel: "确定",
                       cancelButtonLabel: "取消",
@@ -115,7 +116,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
                   });
                   field.didChange(_selected);
                   if (widget.onConfirm != null) {
-                    widget.onConfirm(_selected);
+                    widget.onConfirm!(_selected);
                   }
                 }
               });
@@ -125,16 +126,14 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
   Widget _buildSelectedOptions() {
     List<String> selectedOptions = [];
 
-    if (_selected != null) {
-      for (var item in _selected) {
-        var existingItem = widget.nodes.singleWhere((itm) => itm.value == item, orElse: () => null);
-        if (existingItem == null) {
-          continue;
-        }
-        selectedOptions.add(
-            existingItem.title,
-        );
+    for (var item in _selected) {
+      var existingItem = widget.nodes.singleWhereOrNull((itm) => itm.value == item);
+      if (existingItem == null) {
+        continue;
       }
+      selectedOptions.add(
+        existingItem.title,
+      );
     }
     return Text(selectedOptions.join(", "));
   }
@@ -142,7 +141,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
   TreeNode getTreeNode(List<int> indices) {
     TreeNode node = widget.nodes[indices[0]];
     for (var index in indices.sublist(1)) {
-      node = node.children[index];
+      node = node.children![index];
     }
     return node;
   }
