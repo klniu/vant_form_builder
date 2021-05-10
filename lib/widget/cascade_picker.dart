@@ -41,8 +41,8 @@ import 'package:vant_form_builder/model/tree_node.dart';
 /// pageData: 下一页的数据
 /// currentPage: 当前是第几页,
 /// selectIndex: 当前页选中第几项
-typedef void NextPageCallback(Function(List<TreeNode>?) pageData, TreeNode currentItem, int currentPage,
-    int selectIndex);
+typedef void NextPageCallback(
+    Function(List<TreeNode>?) pageData, TreeNode currentItem, int currentPage, int selectIndex);
 
 class CascadePicker extends StatefulWidget {
   final List<TreeNode> initialPageData;
@@ -59,7 +59,7 @@ class CascadePicker extends StatefulWidget {
     this.maxPageNum = 3,
     required this.controller,
     this.tabHeight = 40,
-    this.itemHeight = 40,
+    this.itemHeight = 30,
     this.defaultIndices,
   });
 
@@ -110,7 +110,6 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
 
   /// 当前选择的页面，移动滑块前赋值
   int _currentSelectPage = 0;
-
 
   _addTab(int page, int atIndex, TreeNode currentPageItem) {
     _loadNextPageData(page, atIndex, currentPageItem);
@@ -200,7 +199,7 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
       offset: Offset(Tween<double>(begin: _isAddTabEvent ? -_animTabWidth : 0, end: 0).evaluate(_curvedAnimation), 0),
       child: Opacity(
 
-        /// 动画未开始前隐藏文本
+          /// 动画未开始前隐藏文本
           opacity: _isAnimateTextHide ? 0 : 1,
           child: tab),
     );
@@ -219,24 +218,12 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
           alignment: Alignment.center,
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: MediaQuery
-                .of(context)
-                .size
-                .width / _pagesData.length - 10),
+            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / _pagesData.length - 10),
             child: Text(
               _selectedTabs[i].title,
               style: _currentSelectPage == i
-                  ? Theme
-                  .of(context)
-                  .textTheme
-                  .bodyText2!
-                  .copyWith(color: Theme
-                  .of(context)
-                  .accentColor)
-                  : Theme
-                  .of(context)
-                  .textTheme
-                  .bodyText2,
+                  ? Theme.of(context).textTheme.bodyText2!.copyWith(color: Theme.of(context).accentColor)
+                  : Theme.of(context).textTheme.bodyText2,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -264,33 +251,19 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
         padding: EdgeInsets.symmetric(horizontal: 15),
         height: widget.itemHeight,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             item == _selectedTabs[page]
                 ? Padding(
-              padding: const EdgeInsets.all(3.0),
-              child: Icon(Icons.check_circle,
-                  size: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyText2!
-                      .fontSize, color: Theme
-                      .of(context)
-                      .accentColor),
-            )
-                : SizedBox(),
+                    padding: const EdgeInsets.all(3.0),
+                    child: Icon(Icons.check_circle,
+                        size: Theme.of(context).textTheme.bodyText2!.fontSize, color: Theme.of(context).accentColor),
+                  )
+                : SizedBox(width: 3.0 + Theme.of(context).textTheme.bodyText2!.fontSize!.toDouble()),
             Text(item.title,
                 style: item == _selectedTabs[page]
-                    ? Theme
-                    .of(context)
-                    .textTheme
-                    .bodyText2!
-                    .copyWith(color: Theme
-                    .of(context)
-                    .accentColor)
-                    : Theme
-                    .of(context)
-                    .textTheme
-                    .bodyText2)
+                    ? Theme.of(context).textTheme.bodyText2!.copyWith(color: Theme.of(context).accentColor)
+                    : Theme.of(context).textTheme.bodyText2)
           ],
         ),
       ),
@@ -366,8 +339,7 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
 
     _controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
 
-    _curvedAnimation = CurvedAnimation(parent: _controller, curve: Curves.ease)
-      ..addStatusListener((state) {});
+    _curvedAnimation = CurvedAnimation(parent: _controller, curve: Curves.ease)..addStatusListener((state) {});
 
     _sliderAnimation = Tween<double>(begin: 0, end: 10).animate(_curvedAnimation);
 
@@ -381,7 +353,7 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
       }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -389,37 +361,30 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
       children: [
         AnimatedBuilder(
           animation: _sliderAnimation,
-          builder: (context, child) =>
-              Stack(
-                alignment: Alignment.bottomLeft,
-                children: [
-                  Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    child: Row(
-                      children: _tabWidgets(),
-                    ),
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: _sliderFixMargin,
-                    builder: (_, margin, __) =>
-                        Positioned(
-                          left: (margin as double) + _sliderAnimation.value,
-                          child: Container(
-                            key: _sliderKey,
-                            width: _sliderWidth,
-                            height: 2,
-                            decoration:
-                            BoxDecoration(color: Theme
-                                .of(context)
-                                .accentColor, borderRadius: BorderRadius.circular(2)),
-                          ),
-                        ),
-                  )
-                ],
+          builder: (context, child) => Stack(
+            alignment: Alignment.bottomLeft,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: _tabWidgets(),
+                ),
               ),
+              ValueListenableBuilder(
+                valueListenable: _sliderFixMargin,
+                builder: (_, margin, __) => Positioned(
+                  left: (margin as double) + _sliderAnimation.value,
+                  child: Container(
+                    key: _sliderKey,
+                    width: _sliderWidth,
+                    height: 2,
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).accentColor, borderRadius: BorderRadius.circular(2)),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
         Expanded(
           child: PageView.builder(
