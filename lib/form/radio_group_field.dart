@@ -28,17 +28,19 @@ class RadioGroupField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FormBuilderRadioGroup(
-        name: this.name,
-        initialValue: this.defaultValue,
-        validator: this.validator,
-        enabled: this.enabled,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          labelText: this.label + (this.required ? " *" : ''),
-          labelStyle: this.required ? TextStyle(color: Colors.red) : null,
-          hintText: this.placeholder ?? "请输入" + this.label,
-        ),
-        options: items,
+      name: this.name,
+      initialValue: this.defaultValue,
+      validator: this.validator,
+      enabled: this.enabled,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        labelText: this.label + (this.required ? " *" : ''),
+        labelStyle: this.required
+            ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
+            : Theme.of(context).inputDecorationTheme.labelStyle,
+        hintText: this.placeholder ?? "请输入" + this.label,
+      ),
+      options: items,
       onChanged: onChanged,
     );
   }

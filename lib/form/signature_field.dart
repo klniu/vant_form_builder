@@ -74,7 +74,9 @@ class _SignatureFieldState extends State<SignatureField> {
               decoration: InputDecoration(
                   labelText: widget.label + (widget.required ? " *" : ''),
                   errorText: field.errorText,
-                  labelStyle: widget.required ? TextStyle(color: Colors.red) : null),
+                  labelStyle: widget.required
+                      ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
+                      : Theme.of(context).inputDecorationTheme.labelStyle),
               child: _buildPicker(field));
         });
   }
@@ -91,27 +93,24 @@ class _SignatureFieldState extends State<SignatureField> {
         FocusScope.of(context).requestFocus(new FocusNode());
         _controller.clear();
         customDialog(
-          Signature(
-            controller: _controller,
-            height: 200,
-          ),
-          title: "手写签名",
-          maxWidth: double.infinity,
-          onConfirmed: () async {
-            if (_controller.isNotEmpty) {
-              var data = await _controller.toPngBytes();
-              setState(() {
-                _imageUri = _dataUriPrefix + base64.encode(data!);
-              });
-              field.didChange(_imageUri);
-              if (widget.onConfirm != null) {
-                await widget.onConfirm!(_imageUri);
-              }
-              Get.back();
+            Signature(
+              controller: _controller,
+              height: 200,
+            ),
+            title: "手写签名",
+            maxWidth: double.infinity, onConfirmed: () async {
+          if (_controller.isNotEmpty) {
+            var data = await _controller.toPngBytes();
+            setState(() {
+              _imageUri = _dataUriPrefix + base64.encode(data!);
+            });
+            field.didChange(_imageUri);
+            if (widget.onConfirm != null) {
+              await widget.onConfirm!(_imageUri);
             }
-          },
-          onCanceled: Get.back
-        );
+            Get.back();
+          }
+        }, onCanceled: Get.back);
       },
     );
   }

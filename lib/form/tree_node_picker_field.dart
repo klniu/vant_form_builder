@@ -91,16 +91,15 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
                               children: <Widget>[
                                 _buildToolbar(context),
                                 Expanded(
-                                  child: CascadePicker(
-                                    initialPageData: widget.nodes,
-                                    nextPageData: (pageCallback, currentItem, currentPage, selectIndex) async {
-                                      pageCallback(currentItem.children);
-                                    },
-                                    defaultIndices: index,
-                                    controller: _cascadeController,
-                                    maxPageNum: 4,
-                                  )
-                                ),
+                                    child: CascadePicker(
+                                  initialPageData: widget.nodes,
+                                  nextPageData: (pageCallback, currentItem, currentPage, selectIndex) async {
+                                    pageCallback(currentItem.children);
+                                  },
+                                  defaultIndices: index,
+                                  controller: _cascadeController,
+                                  maxPageNum: 4,
+                                )),
                               ],
                             ),
                           ],
@@ -111,7 +110,9 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
                 decoration: InputDecoration(
                     labelText: widget.label + (widget.required ? " *" : ''),
                     errorText: field.errorText,
-                    labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
+                    labelStyle: widget.required
+                        ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
+                        : Theme.of(context).inputDecorationTheme.labelStyle,
                     hintText: widget.placeholder ?? "请输入" + widget.label),
                 child: widget.loading
                     ? Text("数据加载中...", style: Theme.of(context).textTheme.bodyText2)
@@ -128,10 +129,8 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
       height: 44.0,
       decoration: BoxDecoration(
         border: Border(
-            top: BorderSide(
-                color: Theme.of(context).dividerColor, width: 0.0),
-            bottom:
-            BorderSide(color: Theme.of(context).dividerColor, width: 1.0)),
+            top: BorderSide(color: Theme.of(context).dividerColor, width: 0.0),
+            bottom: BorderSide(color: Theme.of(context).dividerColor, width: 1.0)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

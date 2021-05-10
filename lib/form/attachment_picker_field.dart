@@ -89,7 +89,8 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
               decoration: InputDecoration(
                 labelText: widget.label + (widget.required ? " *" : ''),
                 errorText: field.errorText,
-                labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
+                labelStyle: widget.required ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color:
+                Colors.red) : Theme.of(context).inputDecorationTheme.labelStyle,
                 contentPadding: EdgeInsets.symmetric(vertical: 10),
               ),
               child: Padding(padding: EdgeInsets.only(top: 5), child: _buildPicker(field)));

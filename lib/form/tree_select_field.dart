@@ -107,7 +107,9 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                   decoration: InputDecoration(
                     labelText: widget.label + (widget.required ? " *" : ''),
                     errorText: field.errorText,
-                    labelStyle: widget.required ? TextStyle(color: Colors.red) : null,
+                    labelStyle: widget.required
+                        ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
+                        : Theme.of(context).inputDecorationTheme.labelStyle,
                     hintText: widget.placeholder ?? "请输入" + widget.label,
                   ),
                   child: widget.loading
