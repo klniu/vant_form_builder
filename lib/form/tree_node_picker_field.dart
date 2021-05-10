@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
 import 'package:vant_form_builder/util/data_converter.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
-import 'package:vant_form_builder/widget/picker.dart';
+import 'package:vant_form_builder/widget/cascade_picker.dart';
 
 class TreeNodePickerField<T> extends StatefulWidget {
   final String name;
@@ -38,17 +38,17 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
   String selectedText = "";
   List<int>? index;
   T? value;
+  final _cascadeController = CascadeController();
+  FormFieldState<dynamic>? field;
 
   _TreeNodePickerFieldState();
-
-  static FormBuilderState? of(BuildContext context) => context.findAncestorStateOfType<FormBuilderState>();
 
   @override
   void initState() {
     if (widget.defaultValue != null) {
       _onChangeValueOutside(widget.defaultValue);
     } else {
-      FormBuilderState? formBuilderState = of(context);
+      FormBuilderState? formBuilderState = context.findAncestorStateOfType<FormBuilderState>();
       if (formBuilderState != null) {
         _onChangeValueOutside(formBuilderState.initialValue[widget.name]);
       }
@@ -69,6 +69,7 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
           _onChangeValueOutside(val);
         },
         builder: (FormFieldState<dynamic> field) {
+          this.field = field;
           return GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
@@ -79,59 +80,31 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
                 ToastUtil.info("无数据");
                 return;
               }
-              List<PickerItem> items = DataConverter.treeNode2PickerItem(widget.nodes);
               showModalBottomSheet(
                   context: context,
                   builder: (BuildContext context) {
-                    // 对于1级的，defaultIndex不能是数组
-                    int level = DataConverter.getPickerItemDeep(items);
-                    var defaultIndex;
-                    if (index != null) {
-                      if (level == 1 && index!.length > 0) {
-                        defaultIndex = index![0];
-                      } else {
-                        defaultIndex = List.generate(level, (i) {
-                          if (index!.length > i) {
-                            return index![i];
-                          } else {
-                            return 0;
-                          }
-                        });
-                      }
-                    }
-                    return Picker(
-                        colums: items,
-                        level: level,
-                        defaultIndex: defaultIndex,
-                        showToolbar: true,
-                        itemHeight: 36,
-                        title: "请选择" + widget.label,
-                        onCancel: (values, index) {
-                          Navigator.pop(context);
-                        },
-                        onConfirm: (List<String?> values, indies) {
-                          setState(() {
-                            if (indies is int) {
-                              index = [indies];
-                            } else {
-                              index = indies;
-                            }
-                            // picker在多维度如果不整齐的话，缺少的会补位"-"
-                            var tailIndex = values.indexOf("-");
-                            if (tailIndex == -1) {
-                              selectedText = values.join("/");
-                              value = getTreeNode(index!).value;
-                            } else {
-                              selectedText = values.sublist(0, tailIndex).join("/");
-                              value = getTreeNode(index!.sublist(0, tailIndex)).value;
-                            }
-                          });
-                          field.didChange(value);
-                          if (widget.onConfirm != null) {
-                            widget.onConfirm!(selectedText, value);
-                          }
-                          Navigator.pop(context);
-                        });
+                    return Container(
+                        height: 260.0,
+                        child: Stack(
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                _buildToolbar(context),
+                                Expanded(
+                                  child: CascadePicker(
+                                    initialPageData: widget.nodes,
+                                    nextPageData: (pageCallback, currentItem, currentPage, selectIndex) async {
+                                      pageCallback(currentItem.children);
+                                    },
+                                    defaultIndices: index,
+                                    controller: _cascadeController,
+                                    maxPageNum: 4,
+                                  )
+                                ),
+                              ],
+                            ),
+                          ],
+                        ));
                   });
             },
             child: InputDecorator(
@@ -148,6 +121,73 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
                             style: Theme.of(context).inputDecorationTheme.hintStyle)),
           );
         });
+  }
+
+  Widget _buildToolbar(BuildContext context) {
+    return Container(
+      height: 44.0,
+      decoration: BoxDecoration(
+        border: Border(
+            top: BorderSide(
+                color: Theme.of(context).dividerColor, width: 0.0),
+            bottom:
+            BorderSide(color: Theme.of(context).dividerColor, width: 1.0)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          buildCancelButton(context),
+          Text(widget.placeholder ?? "请选择" + widget.label, style: Theme.of(context).textTheme.subtitle2),
+          buildConfirmButton(context),
+        ],
+      ),
+    );
+  }
+
+  Widget buildConfirmButton(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: () {
+          // 判断是否完成选择
+          if (_cascadeController.isCompleted()) {
+            List<TreeNode> selectedTitles = _cascadeController.selectedItems;
+            setState(() {
+              index = _cascadeController.selectedIndexes;
+              selectedText = selectedTitles.map((e) => e.title).join("/");
+              value = getTreeNode(index!).value;
+            });
+            field!.didChange(value);
+            if (widget.onConfirm != null) {
+              widget.onConfirm!(selectedText, value);
+            }
+            Navigator.pop(context);
+          } else {
+            ToastUtil.info("请选择至最后一级");
+          }
+        },
+        child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            alignment: AlignmentDirectional.center,
+            child: Text("确定", style: Theme.of(context).textTheme.subtitle2)),
+      ),
+    );
+  }
+
+  Widget buildCancelButton(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          alignment: AlignmentDirectional.center,
+          child: Text("取消", style: Theme.of(context).textTheme.subtitle2),
+        ),
+      ),
+    );
   }
 
   TreeNode getTreeNode(List<int> indices) {

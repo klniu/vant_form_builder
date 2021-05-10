@@ -4,7 +4,7 @@ class TreeNode<T> {
   List<TreeNode<T>>? children;
   String title;
   String? key;
-  T value;
+  T? value;
   int? depth;
 
   late bool expand;
