@@ -7,13 +7,13 @@ import 'package:vant_form_builder/util/toast_util.dart';
 
 import 'multiselect_dialog.dart';
 
-class MultipleSelectField extends StatefulWidget {
+class MultipleSelectField<T> extends StatefulWidget {
   final String name;
   final List<TreeNode> nodes;
   final String label;
   final bool required;
   final FormFieldValidator? validator;
-  final List<String>? defaultValue;
+  final List<T>? defaultValue;
   final String? placeholder;
   final TextStyle? chipLabelStyle;
   final Color? chipBackGroundColor;
@@ -37,11 +37,11 @@ class MultipleSelectField extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MultipleSelectFieldState createState() => _MultipleSelectFieldState();
+  _MultipleSelectFieldState<T> createState() => _MultipleSelectFieldState<T>();
 }
 
-class _MultipleSelectFieldState extends State<MultipleSelectField> {
-  List<String> _selected = [];
+class _MultipleSelectFieldState<T> extends State<MultipleSelectField> {
+  List<T> _selected = [];
 
   _MultipleSelectFieldState();
 
@@ -50,7 +50,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
   @override
   void initState() {
     if (widget.defaultValue != null) {
-      _selected = widget.defaultValue!;
+      _selected = widget.defaultValue! as List<T>;
     } else {
       FormBuilderState? formBuilderState = of(context);
       if (formBuilderState != null) {
@@ -69,7 +69,7 @@ class _MultipleSelectFieldState extends State<MultipleSelectField> {
         onReset: () {
           if (widget.defaultValue != null) {
             setState(() {
-              _selected = widget.defaultValue!;
+              _selected = widget.defaultValue! as List<T>;
             });
           }
         },

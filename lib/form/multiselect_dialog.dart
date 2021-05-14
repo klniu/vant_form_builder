@@ -38,6 +38,7 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
   final _selectedValues = [];
   late List<TreeNode> _searchResults;
 
+  @override
   void initState() {
     super.initState();
     _searchResults = widget.items;
