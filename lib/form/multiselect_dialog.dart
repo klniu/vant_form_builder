@@ -153,7 +153,7 @@ class SearchBarState extends State<SearchBar> {
       width: double.infinity,
       height: 50,
       color: Colors.transparent,
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: TextField(
         decoration: InputDecoration(
             border: OutlineInputBorder(
