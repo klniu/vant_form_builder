@@ -13,7 +13,7 @@ class ToastUtil {
             color: Colors.white,
           ),
           SizedBox(width: 5),
-          Text(text, style: TextStyle(color: Colors.white))
+          Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
         ]),
         backgroundColor: Colors.green,
         colorText: Colors.white);
@@ -30,7 +30,7 @@ class ToastUtil {
             color: Colors.white,
           ),
           SizedBox(width: 5),
-          Text(text, style: TextStyle(color: Colors.white))
+          Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
         ]),
         backgroundColor: Colors.grey,
         colorText: Colors.white,
@@ -48,7 +48,7 @@ class ToastUtil {
             color: Colors.white,
           ),
           SizedBox(width: 5),
-          Text(text, style: TextStyle(color: Colors.white))
+          Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
         ]),
         backgroundColor: Colors.red,
         colorText: Colors.white,
