@@ -40,7 +40,7 @@ class MultipleSelectField<T> extends StatefulWidget {
   _MultipleSelectFieldState<T> createState() => _MultipleSelectFieldState<T>();
 }
 
-class _MultipleSelectFieldState<T> extends State<MultipleSelectField> {
+class _MultipleSelectFieldState<T> extends State<MultipleSelectField<T>> {
   List<T> _selected = [];
 
   _MultipleSelectFieldState();
@@ -50,7 +50,7 @@ class _MultipleSelectFieldState<T> extends State<MultipleSelectField> {
   @override
   void initState() {
     if (widget.defaultValue != null) {
-      _selected = widget.defaultValue! as List<T>;
+      _selected = widget.defaultValue!;
     } else {
       FormBuilderState? formBuilderState = of(context);
       if (formBuilderState != null) {
@@ -69,7 +69,7 @@ class _MultipleSelectFieldState<T> extends State<MultipleSelectField> {
         onReset: () {
           if (widget.defaultValue != null) {
             setState(() {
-              _selected = widget.defaultValue! as List<T>;
+              _selected = widget.defaultValue!;
             });
           }
         },
@@ -94,7 +94,7 @@ class _MultipleSelectFieldState<T> extends State<MultipleSelectField> {
                   ToastUtil.info("无数据");
                   return;
                 }
-                List? selectedValues = await showDialog<List>(
+                List<T>? selectedValues = await showDialog<List<T>>(
                   context: context,
                   builder: (BuildContext context) {
                     return MultiSelectDialog(

@@ -4,9 +4,9 @@ import 'package:vant_form_builder/theme/button_styles.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
 import 'package:vant_form_builder/vant_form_builder.dart';
 
-class MultiSelectDialog extends StatefulWidget {
+class MultiSelectDialog<T> extends StatefulWidget {
   final List<TreeNode> items;
-  final List? initialSelectedValues;
+  final List<T>? initialSelectedValues;
   final Widget? title;
   final String okButtonLabel;
   final String cancelButtonLabel;
@@ -31,11 +31,11 @@ class MultiSelectDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _MultiSelectDialogState();
+  State<StatefulWidget> createState() => _MultiSelectDialogState<T>();
 }
 
-class _MultiSelectDialogState extends State<MultiSelectDialog> {
-  final _selectedValues = [];
+class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
+  final List<T> _selectedValues = [];
   late List<TreeNode> _searchResults;
 
   @override
