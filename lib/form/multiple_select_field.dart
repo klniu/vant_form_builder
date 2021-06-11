@@ -19,7 +19,7 @@ class MultipleSelectField<T> extends StatefulWidget {
   final Color? chipBackGroundColor;
   final bool loading;
   final int limit;
-  final dynamic Function(List)? onConfirm;
+  final dynamic Function(List<T>)? onConfirm;
 
   MultipleSelectField(this.name,
       {Key? key,

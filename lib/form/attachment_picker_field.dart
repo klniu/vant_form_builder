@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart';
-import 'package:image/image.dart' as img;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -11,7 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:vant_form_builder/model/attachment_type.dart';
 import 'package:vant_form_builder/model/attachment.dart';
 import 'package:vant_form_builder/util/toast_util.dart';
-import 'package:intl/intl.dart';
 import 'package:vant_form_builder/widget/imageWall.dart';
 
 class AttachmentPickerField extends StatefulWidget {
@@ -89,8 +86,9 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
               decoration: InputDecoration(
                 labelText: widget.label + (widget.required ? " *" : ''),
                 errorText: field.errorText,
-                labelStyle: widget.required ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color:
-                Colors.red) : Theme.of(context).inputDecorationTheme.labelStyle,
+                labelStyle: widget.required
+                    ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
+                    : Theme.of(context).inputDecorationTheme.labelStyle,
                 contentPadding: EdgeInsets.symmetric(vertical: 10),
               ),
               child: Padding(padding: EdgeInsets.only(top: 5), child: _buildPicker(field)));
@@ -115,7 +113,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         onlyCamera: widget.onlyCamera,
         multiple: widget.multiple,
         onUpload: (files) async {
-          if (files.isEmpty() || widget.disabled) {
+          if (files.isEmpty || widget.disabled) {
             return null;
           }
           setState(() {
@@ -125,45 +123,22 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
 
           List<Attachment> attachments = [];
           // 从相机来，只有一张照片
-          if (files.pickedFile != null) {
+          for (var file in files) {
             setState(() {
               ++uploadCount;
             });
-            img.Image image = img.decodeImage(await File(files.pickedFile!.path).readAsBytes())!;
+            Uint8List? byteData;
             // 压缩图片
-            if (image.height > 1000) {
-              image = img.copyResize(image, height: 1000);
-            } else if (image.width > 1000) {
-              image = img.copyResize(image, width: 1000);
+            if (file.height > 1000) {
+              byteData = await file.thumbDataWithSize((file.width / file.height * 1000).round(), 1000, quality: 90);
+            } else if (file.width > 1000) {
+              byteData = await file.thumbDataWithSize(1000, (file.height / file.width * 1000).round(), quality: 90);
+            } else {
+              byteData = await file.thumbData;
             }
-            MultipartFile multipartFile = MultipartFile(
-              img.encodeJpg(image),
-              filename: "DCIM_${new DateFormat("yyyyMMddHHmmss").format(DateTime.now())}.jpg",
-              contentType: 'image/jpeg',
-            );
-            Attachment attachment = await widget.uploadService(multipartFile);
-            setState(() {
-              attachments.add(attachment);
-            });
-          } else if (files.assets != null && files.assets!.length > 0) {
-            var assets = files.assets!;
-            for (var file in assets) {
-              setState(() {
-                ++uploadCount;
-              });
-              ByteData byteData;
-              // 压缩图片
-              if (file.originalHeight! > 1000) {
-                byteData = await file.getThumbByteData((file.originalWidth! / file.originalHeight! * 1000).round(), 1000,
-                    quality: 90);
-              } else if (file.originalWidth! > 1000) {
-                byteData = await file.getThumbByteData(1000, (file.originalHeight! / file.originalWidth! * 1000).round(),
-                    quality: 90);
-              } else {
-                byteData = await file.getByteData(quality: 90);
-              }
-              List<int> imageData = byteData.buffer.asUint8List();
-              MultipartFile multipartFile = MultipartFile(imageData, filename: file.name!);
+            if (byteData != null) {
+              MultipartFile multipartFile =
+                  MultipartFile(byteData, filename: file.title ?? "image_${this.uploadCount}");
               Attachment attachment = await widget.uploadService(multipartFile);
               setState(() {
                 attachments.add(attachment);
@@ -239,9 +214,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
               Text("${_attachments.length}/${widget.maxCount}"),
               InkWell(
                 child: const Text("选择文件"),
-                onTap: (_remainingItemCount <= 0 && !widget.disabled)
-                    ? null
-                    : () => pickFiles(field),
+                onTap: (_remainingItemCount <= 0 && !widget.disabled) ? null : () => pickFiles(field),
               ),
             ],
           ),
@@ -252,6 +225,7 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
     ]);
   }
 
+  // @TODO wechat_assets_picker
   Future<void> pickFiles(FormFieldState field) async {
     FilePickerResult? result;
     try {
@@ -274,7 +248,8 @@ class _AttachmentPickerFieldState extends State<AttachmentPickerField> {
         _uploading = true;
       });
       for (var file in result.files) {
-        MultipartFile multipartFile = MultipartFile(file.bytes, filename: file.name!);
+        // @TODO 变更为 wechat_assets_picker
+        MultipartFile multipartFile = MultipartFile(file.bytes, filename: file.name);
         Attachment attachment = await widget.uploadService(multipartFile);
         setState(() => _attachments.add(attachment));
         field.didChange(_attachments);

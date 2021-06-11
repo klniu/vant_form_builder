@@ -6,14 +6,14 @@ class CustomTextField extends StatefulWidget {
   final String name;
   final String label;
   final bool required;
-  final FormFieldValidator? validator;
+  final FormFieldValidator<String>? validator;
   final int rows;
   final int? maxLength;
   final String? defaultValue;
   final String? placeholder;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
-  final Function(String)? onChange;
+  final Function(String?)? onChange;
   final bool disabled;
   final bool obscureText;
   final TextAlign inputAlign;
@@ -68,6 +68,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 )
               : null,
           prefixIcon: widget.prefixIcon),
+      onChanged: widget.onChange,
       style: Theme.of(context).textTheme.bodyText2,
       keyboardType: widget.keyboardType,
       maxLength: widget.maxLength,
