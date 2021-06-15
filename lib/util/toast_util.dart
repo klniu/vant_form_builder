@@ -2,56 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToastUtil {
+  static _toast(String text, IconData iconData, Color backgroundColor) {
+    ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+      content: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+        Icon(
+          iconData,
+          color: Colors.white,
+        ),
+        SizedBox(width: 5),
+        Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
+      ]),
+      backgroundColor: backgroundColor,
+      behavior: SnackBarBehavior.floating,
+      duration: Duration(seconds: 3),
+    ));
+  }
+
   static success(String text) {
-    // EasyLoading.instance.backgroundColor = Colors.green;
-    // EasyLoading.showSuccess(text);
-    Get.snackbar("", "",
-        titleText: SizedBox(),
-        messageText: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          Icon(
-            Icons.check_circle,
-            color: Colors.white,
-          ),
-          SizedBox(width: 5),
-          Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
-        ]),
-        backgroundColor: Colors.green,
-        colorText: Colors.white);
+    _toast(text, Icons.check_circle, Colors.green);
   }
 
   static info(String text) {
-    // EasyLoading.instance.backgroundColor = Colors.grey;
-    // EasyLoading.showInfo(text);
-    Get.snackbar("", "",
-        titleText: Container(),
-        messageText: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          Icon(
-            Icons.info,
-            color: Colors.white,
-          ),
-          SizedBox(width: 5),
-          Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
-        ]),
-        backgroundColor: Colors.grey,
-        colorText: Colors.white,
-        duration: Duration(seconds: 3));
+    _toast(text, Icons.info, Colors.grey);
   }
 
   static error(String text) {
-    // EasyLoading.instance.backgroundColor = Colors.red;
-    // EasyLoading.showError(text);
-    Get.snackbar("", "",
-        titleText: SizedBox(),
-        messageText: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          Icon(
-            Icons.warning,
-            color: Colors.white,
-          ),
-          SizedBox(width: 5),
-          Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
-        ]),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: Duration(seconds: 3));
+    _toast(text, Icons.warning, Colors.red);
   }
 }
