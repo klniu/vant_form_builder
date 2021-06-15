@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
@@ -127,23 +128,17 @@ class _ImageWall extends State<ImageWall> {
       child: widget.uploadBtn ?? btn,
       onTap: () async {
         List<AssetEntity> imageFiles = [];
-        try {
-          if (widget.onlyCamera) {
-            var result = await pickImageFromCamera();
-            if (result == null) {
-              return;
-            }
-            imageFiles.add(result);
-          } else {
-            List<AssetEntity>? resultList = await AssetPicker.pickAssets(context,
-              maxAssets: widget.multiple ? widget.count - images.length : 1,
-            );
-            if (resultList != null) {
-              imageFiles.addAll(resultList);
-            }
+        if (widget.onlyCamera) {
+          var result = await pickImageFromCamera();
+          if (result == null) {
+            return;
           }
-        } on Exception catch (e) {
-          print(e.toString());
+          imageFiles.add(result);
+        } else {
+          await showImageSelectUsingCamera(imageFiles);
+        }
+        if (imageFiles.isEmpty) {
+          return;
         }
         List<String>? urls = await widget.onUpload(imageFiles);
         if (urls == null || urls.isEmpty) {
@@ -155,6 +150,55 @@ class _ImageWall extends State<ImageWall> {
         widget.onChange(images);
       },
     );
+  }
+
+  // 选择使用相机还是相册
+  Future showImageSelectUsingCamera(List<AssetEntity> assets) async {
+    await Get.bottomSheet(Wrap(children: [
+      Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(vertical: 8),
+        decoration: new BoxDecoration(
+          color: Get.theme.scaffoldBackgroundColor,
+          borderRadius: new BorderRadius.only(
+            topLeft: const Radius.circular(5.0),
+            topRight: const Radius.circular(5.0),
+          ),
+        ),
+        child: Text("选择图片来源", style: Get.theme.textTheme.subtitle1),
+      ),
+      Divider(height: 0.5, color: Get.theme.dividerColor),
+      Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          color: Get.theme.scaffoldBackgroundColor,
+          alignment: AlignmentDirectional.center,
+          child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(child: Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Text("拍摄", style: TextStyle
+                  (fontSize: 16))),
+                  onTap: () async {
+                    var result = await pickImageFromCamera();
+                    if (result == null) {
+                      Get.back();
+                      return;
+                    }
+                    assets.add(result);
+                    Get.back();
+                  },),
+                Divider(height: 0.5, color: Get.theme.dividerColor),
+                InkWell(child: Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Text("相册", style: TextStyle
+                  (fontSize: 16))), onTap: () async {
+                  List<AssetEntity>? resultList = await AssetPicker.pickAssets(
+                    context,
+                    maxAssets: widget.multiple ? widget.count - images.length : 1,
+                  );
+                  if (resultList != null) {
+                    assets.addAll(resultList);
+                  }
+                  Get.back();
+                },),
+              ]))
+    ]));
   }
 
   Future<AssetEntity?> pickImageFromCamera() async {
