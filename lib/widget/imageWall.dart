@@ -169,7 +169,6 @@ class _ImageWall extends State<ImageWall> {
       ),
       Divider(height: 0.5, color: Get.theme.dividerColor),
       Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
           color: Get.theme.scaffoldBackgroundColor,
           alignment: AlignmentDirectional.center,
           child: Column(mainAxisAlignment: MainAxisAlignment.center,
