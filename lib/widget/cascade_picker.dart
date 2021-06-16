@@ -212,6 +212,7 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
       GlobalKey key = GlobalKey();
       _tabKeys.add(key);
       final tab = GestureDetector(
+        behavior: HitTestBehavior.translucent,
         child: Container(
           key: key,
           height: widget.tabHeight,
@@ -246,6 +247,7 @@ class _CascadePickerState extends State<CascadePicker> with SingleTickerProvider
   /// 选择项
   Widget _pageItemWidget(int index, int page, TreeNode item) {
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       child: Container(
         alignment: Alignment.centerLeft,
         padding: EdgeInsets.symmetric(horizontal: 15),
