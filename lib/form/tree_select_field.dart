@@ -19,8 +19,7 @@ class TreeSelectField extends StatefulWidget {
   final int limit;
   final dynamic Function(List?)? onConfirm;
 
-  TreeSelectField(
-    this.name, {
+  TreeSelectField(this.name, {
     Key? key,
     this.nodes = const [],
     this.label = "",
@@ -46,6 +45,7 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.defaultValue != null) {
       _selected = widget.defaultValue;
     } else {
@@ -54,7 +54,10 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
         _selected = formBuilderState.initialValue[widget.name] ?? [];
       }
     }
-    super.initState();
+    // 默认值也在初始时激活一次onConfirmed
+    if (_selected != null && _selected!.length > 0 && widget.onConfirm != null) {
+      widget.onConfirm!(_selected);
+    }
   }
 
   @override
@@ -84,7 +87,11 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                       widget.nodes,
                       title: Text("请选择" + widget.label,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.bold)),
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .subtitle1!
+                              .copyWith(fontWeight: FontWeight.bold)),
                       okButtonLabel: "确定",
                       cancelButtonLabel: "取消",
                       initialSelectedValues: _selected,
@@ -108,16 +115,26 @@ class _TreeSelectFieldState extends State<TreeSelectField> {
                     labelText: widget.label + (widget.required ? " *" : ''),
                     errorText: field.errorText,
                     labelStyle: widget.required
-                        ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
-                        : Theme.of(context).inputDecorationTheme.labelStyle,
+                        ? Theme
+                        .of(context)
+                        .inputDecorationTheme
+                        .labelStyle!
+                        .copyWith(color: Colors.red)
+                        : Theme
+                        .of(context)
+                        .inputDecorationTheme
+                        .labelStyle,
                     hintText: widget.placeholder ?? "请输入" + widget.label,
                   ),
                   child: widget.loading
                       ? Text("数据加载中...")
                       : _selected != null && _selected!.length > 0
-                          ? _buildSelectedOptions()
-                          : Text(widget.placeholder ?? "请选择" + widget.label,
-                              style: Theme.of(context).inputDecorationTheme.hintStyle)));
+                      ? _buildSelectedOptions()
+                      : Text(widget.placeholder ?? "请选择" + widget.label,
+                      style: Theme
+                          .of(context)
+                          .inputDecorationTheme
+                          .hintStyle)));
         });
   }
 

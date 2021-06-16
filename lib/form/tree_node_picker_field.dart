@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:vant_form_builder/model/tree_node.dart';
@@ -15,6 +16,7 @@ class TreeNodePickerField<T> extends StatefulWidget {
   final String? placeholder;
   final bool loading;
   final bool disabled;
+  // 节点内容变化的回调
   final dynamic Function(String title, T value)? onConfirm;
 
   TreeNodePickerField(this.name,
@@ -27,7 +29,8 @@ class TreeNodePickerField<T> extends StatefulWidget {
       this.placeholder,
       this.loading = false,
       this.disabled = false,
-      this.onConfirm})
+      this.onConfirm,
+      })
       : super(key: key);
 
   @override
@@ -45,6 +48,11 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
 
   @override
   void initState() {
+    super.initState();
+    _defaultValueChanged();
+  }
+
+  _defaultValueChanged() {
     if (widget.defaultValue != null) {
       _onChangeValueOutside(widget.defaultValue);
     } else {
@@ -53,17 +61,21 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
         _onChangeValueOutside(formBuilderState.initialValue[widget.name]);
       }
     }
-    super.initState();
+    // 默认值也在初始时激活一次onConfirmed
+    if (value != null && widget.onConfirm != null) {
+      widget.onConfirm!(selectedText, value);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    //  当nodes变化时，重新计算默认值
     return FormBuilderField(
         name: widget.name,
         validator: widget.validator,
         enabled: !widget.disabled,
         initialValue: widget.defaultValue,
-        onReset: () => _onChangeValueOutside(widget.defaultValue),
+        onReset: _defaultValueChanged,
         onChanged: (dynamic val) {
           if (val == value) return;
           _onChangeValueOutside(val);
