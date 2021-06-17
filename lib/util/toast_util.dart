@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class ToastUtil {
   static _toast(String text, IconData iconData, Color backgroundColor) {
-    ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
-      content: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Icon(
-          iconData,
-          color: Colors.white,
+    showTopSnackBar(
+        Get.context!,
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Icon(
+              iconData,
+              color: Colors.white,
+            ),
+            SizedBox(width: 5),
+            Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
+          ]),
         ),
-        SizedBox(width: 5),
-        Expanded(child: Text(text, style: TextStyle(color: Colors.white)))
-      ]),
-      backgroundColor: backgroundColor,
-      behavior: SnackBarBehavior.floating,
-      duration: Duration(seconds: 3),
-    ));
+      displayDuration: Duration(seconds: 1),
+    );
   }
 
   static success(String text) {
