@@ -8,6 +8,12 @@ class DateTimeField extends StatelessWidget {
   final bool required;
   final FormFieldValidator? validator;
   final DateTime? defaultTime;
+
+  /// 最早日期
+  final DateTime? firstDate;
+
+  /// 最晚日期
+  final DateTime? lastDate;
   final InputType inputType;
   final String? placeholder;
 
@@ -18,26 +24,32 @@ class DateTimeField extends StatelessWidget {
       this.validator,
       this.inputType: InputType.date,
       this.placeholder,
-      this.defaultTime})
+      this.defaultTime,
+      this.firstDate,
+      this.lastDate})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FormBuilderDateTimePicker(
-        name: this.name,
-        // onChanged: _onChanged,
-        format: DateFormat('yyyy-MM-dd HH:mm:ss'),
-        inputType: this.inputType,
-        decoration: InputDecoration(
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          labelText: this.label + (this.required ? " *" : ''),
-          labelStyle: this.required
-              ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
-              : Theme.of(context).inputDecorationTheme.labelStyle,
-          hintText: this.placeholder ?? "请输入" + this.label,
-        ),
-        style: Theme.of(context).textTheme.bodyText2,
-        initialValue: this.defaultTime,
-        validator: this.validator);
+      name: this.name,
+      // onChanged: _onChanged,
+      format: DateFormat('yyyy-MM-dd HH:mm:ss'),
+      inputType: this.inputType,
+      decoration: InputDecoration(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        labelText: this.label + (this.required ? " *" : ''),
+        labelStyle: this.required
+            ? Theme.of(context).inputDecorationTheme.labelStyle!.copyWith(color: Colors.red)
+            : Theme.of(context).inputDecorationTheme.labelStyle,
+        hintText: this.placeholder ?? "请输入" + this.label,
+      ),
+      style: Theme.of(context).textTheme.bodyText2,
+      initialValue: this.defaultTime,
+      firstDate: this.firstDate,
+      lastDate: this.lastDate,
+      validator: this.validator,
+      alwaysUse24HourFormat: true,
+    );
   }
 }
