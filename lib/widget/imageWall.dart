@@ -173,8 +173,10 @@ class _ImageWall extends State<ImageWall> {
           alignment: AlignmentDirectional.center,
           child: Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                InkWell(child: Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Text("拍摄", style: TextStyle
-                  (fontSize: 16))),
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  child: Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Text("拍 摄", style: TextStyle
+                  (fontSize: 18))),
                   onTap: () async {
                     var result = await pickImageFromCamera();
                     if (result == null) {
@@ -185,8 +187,10 @@ class _ImageWall extends State<ImageWall> {
                     Get.back();
                   },),
                 Divider(height: 0.5, color: Get.theme.dividerColor),
-                InkWell(child: Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Text("相册", style: TextStyle
-                  (fontSize: 16))), onTap: () async {
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  child: Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Text("相 册", style: TextStyle
+                  (fontSize: 18))), onTap: () async {
                   List<AssetEntity>? resultList = await AssetPicker.pickAssets(
                     context,
                     maxAssets: widget.multiple ? widget.count - images.length : 1,
