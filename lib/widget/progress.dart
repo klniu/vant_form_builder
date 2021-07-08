@@ -68,6 +68,7 @@ class _Progress extends State<Progress> with SingleTickerProviderStateMixin {
   }
 
   _onLayoutDone(_) {
+    if (_pivotKey.currentContext == null) return;
     RenderBox pivot = _pivotKey.currentContext!.findRenderObject() as RenderBox;
     double pivotWidth = pivot.size.width;
     double pivotHeight = pivot.size.height;
