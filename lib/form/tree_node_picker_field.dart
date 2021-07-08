@@ -148,7 +148,7 @@ class _TreeNodePickerFieldState<T> extends State<TreeNodePickerField> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           buildCancelButton(context),
-          Text(widget.placeholder ?? "请选择" + widget.label, style: Theme.of(context).textTheme.subtitle2),
+          Text("请选择" + widget.label, style: Theme.of(context).textTheme.subtitle2),
           buildConfirmButton(context),
         ],
       ),
