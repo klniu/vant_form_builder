@@ -93,7 +93,7 @@ packages:
     source: hosted
     version: "2.0.1"
   extended_image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: extended_image
       url: "https://pub.flutter-io.cn"
@@ -224,13 +224,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.3"
-  liquid_swipe:
-    dependency: "direct main"
-    description:
-      name: liquid_swipe
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.1.0"
   matcher:
     dependency: transitive
     description:

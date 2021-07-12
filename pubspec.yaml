@@ -20,12 +20,12 @@ dependencies:
   file_picker: ^3.0.1
   signature: ^4.1.0
   image: ^3.0.2
-  liquid_swipe: ^2.1.0
   wechat_assets_picker: ^5.5.5
   wechat_camera_picker: ^2.2.0
   permission_handler: ^8.0.0+2
   collection: ^1.15.0-nullsafety.4
   top_snackbar_flutter: ^1.0.0
+  extended_image: ^4.1.0
 
 dev_dependencies:
   flutter_test:
