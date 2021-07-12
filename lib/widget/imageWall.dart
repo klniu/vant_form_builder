@@ -171,36 +171,44 @@ class _ImageWall extends State<ImageWall> {
       Container(
           color: Get.theme.scaffoldBackgroundColor,
           alignment: AlignmentDirectional.center,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Text("拍 摄", style: TextStyle
-                  (fontSize: 18))),
-                  onTap: () async {
-                    var result = await pickImageFromCamera();
-                    if (result == null) {
-                      Get.back();
-                      return;
-                    }
-                    assets.add(result);
-                    Get.back();
-                  },),
-                Divider(height: 0.5, color: Get.theme.dividerColor),
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  child: Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Text("相 册", style: TextStyle
-                  (fontSize: 18))), onTap: () async {
-                  List<AssetEntity>? resultList = await AssetPicker.pickAssets(
-                    context,
-                    maxAssets: widget.multiple ? widget.count - images.length : 1,
-                  );
-                  if (resultList != null) {
-                    assets.addAll(resultList);
-                  }
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text("拍 摄", style: TextStyle(fontSize: 16))])),
+              onTap: () async {
+                var result = await pickImageFromCamera();
+                if (result == null) {
                   Get.back();
-                },),
-              ]))
+                  return;
+                }
+                assets.add(result);
+                Get.back();
+              },
+            ),
+            Divider(height: 0.5, color: Get.theme.dividerColor),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text("相 册", style: TextStyle(fontSize: 16))])),
+              onTap: () async {
+                List<AssetEntity>? resultList = await AssetPicker.pickAssets(
+                  context,
+                  maxAssets: widget.multiple ? widget.count - images.length : 1,
+                );
+                if (resultList != null) {
+                  assets.addAll(resultList);
+                }
+                Get.back();
+              },
+            ),
+          ]))
     ]));
   }
 
