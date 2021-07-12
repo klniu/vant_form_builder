@@ -114,14 +114,14 @@ class _MultiSelectDialogState<T> extends State<MultiSelectDialog<T>> {
   Widget _buildItem(TreeNode item) {
     final checked = _selectedValues.contains(item.value);
     return SizedBox(
-        height: 36,
+        height: 48,
         child: ListTile(
             title: Row(
           children: <Widget>[
             Expanded(child: Text(item.title)),
             SizedBox(
-                width: 36,
-                height: 36,
+                width: 48,
+                height: 48,
                 child: Checkbox(
                   value: checked,
                   onChanged: (checked) => _onItemCheckedChange(item.value, checked),
