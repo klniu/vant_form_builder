@@ -6,7 +6,7 @@ class DetailRow extends StatelessWidget {
   final String label;
   final Widget? child;
   final double? labelWidth;
-  final String text;
+  final String? text;
   final Color? textColor;
   final FontWeight? textFontWeight;
   final bool required;
@@ -16,7 +16,7 @@ class DetailRow extends StatelessWidget {
       {Key? key,
       this.labelWidth,
       this.child,
-      this.text = "",
+      this.text,
       this.textColor,
       this.textFontWeight,
       this.required = false,
@@ -39,7 +39,7 @@ class DetailRow extends StatelessWidget {
               ])),
           Expanded(
               child: child ??
-                  Text(text,
+                  Text(text ?? "",
                       style: Get.textTheme.bodyText2!.copyWith(color: this.textColor, fontWeight: textFontWeight)))
         ]));
   }
